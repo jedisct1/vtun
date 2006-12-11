@@ -1,4 +1,4 @@
-# vtun.spec,v 1.7.2.33.2.22 2006/11/16 04:04:55 mtbishop Exp
+# $Id: vtun.spec,v 1.24.2.2 2006/12/11 14:09:34 mtbishop Exp $
 
 # By default, builds without socks-support.
 # To build with socks-support, issue:
@@ -34,7 +34,7 @@
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-Copyright: 	GPL
+License: 	GPL
 Group: 		System Environment/Daemons
 Url: 		http://vtun.sourceforge.net/
 Source: 	http://vtun.sourceforge.net/%{name}-%{version}.tar.gz
@@ -185,9 +185,13 @@ sbin/insserv etc/init.d/vtund
 
 #date +"%a %b %d %Y"
 %changelog
+* Mon Dec 11 2006 Bishop Clark (LC957) <bishop@platypus.bc.ca>	3.0.0-1
+- new code drop
+- s/Copyright/License/, deprecated parameter.
+
 * Wed Feb 23 2005 Bishop Clark (LC957) <bishop@platypus.bc.ca>	2.9.91-4
 - added XOS macros.
-- s/rhas4/rhel4/ in hopes, although Ihaven't seen it yet.
+- s/rhas4/rhel4/ in hopes, although I haven't seen it yet.
 
 * Thu Oct 07 2004 Bishop Clark (LC957) <bishop@platypus.bc.ca>	2.9.91-3
 - macros support --with/out conditional command line

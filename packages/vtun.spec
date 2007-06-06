@@ -1,16 +1,20 @@
-# $Id: vtun.spec,v 1.24.2.2 2006/12/11 14:09:34 mtbishop Exp $
+# $Id: vtun.spec,v 1.24.2.3 2007/06/06 08:48:19 mtbishop Exp $
 
 # By default, builds without socks-support.
 # To build with socks-support, issue:
 #   rpm --define "_with_socks yes" ...
 
-# By default, builds with LZO support (available for any RPM system)
+# By default, builds with LZO 1 support (available for any RPM system)
 # To disable LZO, issue:
 #   rpm --define "_without_lzo yes" ...
+# 
+# Enabling LZO2 only fixes the RPM builddeps, so far; configure still
+# exercises some license.
+#   rpm --with lzo2
 
 # define variables here for older RPM versions.
 %define name	vtun
-%define version	3.0.0
+%define version	3.0.1
 %define release	1
 
 # expansion of the previous part.
@@ -55,22 +59,27 @@ BuildRequires:  %{_bindir}/gcc
 
 # please check the FAQ for this question, and mail Bishop if there is
 # no FAQ entry.
-%define	_buildreq_	zlib-devel %{!?_without_ssl:openssl-devel >= 0.9.7} %{!?_without_lzo: lzo-devel}
+%define	_buildreq_	zlib-devel %{!?_without_ssl:openssl-devel >= 0.9.7} %{?_with_lzo2:lzo2-devel} %{!?_with_lzo2:%{!?_without_lzo: lzo-devel}}
 %define	_requires_	tun
 
 # Caldera has funny zlib
-%define	_buildreq_ol	libz-devel %{!?_without_ssl:openssl-devel >= 0.9.7} %{!?_without_lzo:lzo-devel}
+%define	_buildreq_ol	libz-devel %{!?_without_ssl:openssl-devel >= 0.9.7} %{?_with_lzo2:lzo2-devel} %{!?_with_lzo2:%{!?_without_lzo: lzo-devel}}
 # Mandrake has unpredictable devel package names
-%define	_buildreq_mdk	zlib1-devel %{!?_without_ssl:libopenssl0-devel >= 0.9.7} %{!?_without_lzo: liblzo1-devel}
+%define	_buildreq_mdk	zlib1-devel %{!?_without_ssl:libopenssl0-devel >= 0.9.7} %{?_with_lzo2:liblzo2-devel} %{!?_with_lzo2:%{!?_without_lzo: liblzo1-devel}}
 
 # normally, NOT depending on the tun package encourages other apps to
 # clobber the modules.conf file. In this case, the reverse is true,
 # since FCx actually includes all the necessary entries.  So no tun.
 # We avoid a %null value by stating one redundantly.
 %define	_requires_fc	zlib
-%define	_buildreq_fc	zlib-devel %{!?_without_ssl:openssl-devel} %{!?_without_lzo: lzo-devel}
-%define	_requires_rhel4	%_requires_fc
-%define	_buildreq_rhel4	%_buildreq_fc
+%define	_buildreq_fc	zlib-devel %{!?_without_ssl:openssl-devel} %{?_with_lzo2:lzo2-devel} %{!?_with_lzo2:%{!?_without_lzo: lzo-devel}}
+%define	_requires_rhel	%_requires_fc
+%define	_buildreq_rhel	%_buildreq_fc
+
+# SuSE doesn't permit lzo and lzo2 to be installed simultaneously so
+# we do not need to care so much.
+%define	_buildreq_suse	zlib-devel %{!?_without_ssl:openssl-devel >= 0.9.7} %{!?_without_lzo: lzo-devel}
+%define	_requires_suse	zlib %{!?_without_lzo: lzo}
 
 Requires:	%{_requires}
 BuildRequires:	%{_buildreq}
@@ -175,16 +184,19 @@ sbin/insserv etc/init.d/vtund
 %attr(755,root,root) %dir %{log_dir}
 %attr(755,root,root) %dir %{lock_dir}
 %{_mandir}/man8/vtund.8*
-#%{_mandir}/man8/vtun.8*
 %{_mandir}/man5/vtund.conf.5*
 /etc/xinetd.d/vtun
 %if "%_dis" == "suse"
+%{_mandir}/man8/vtun.8*
 %attr(755,root,root) %{_sbindir}/rcvtund
 /var/adm/fillup-templates/rc.config.vtund
 %endif
 
 #date +"%a %b %d %Y"
 %changelog
+* Tue Mar 27 2007 Bishop Clark (LC957) <bishop@platypus.bc.ca>	3.0.1-1
+- new code drop (more LZO2 work)
+
 * Mon Dec 11 2006 Bishop Clark (LC957) <bishop@platypus.bc.ca>	3.0.0-1
 - new code drop
 - s/Copyright/License/, deprecated parameter.

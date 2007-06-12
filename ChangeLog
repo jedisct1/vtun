@@ -1,0 +1,275 @@
+3.0.1:
+	rfe1602625 - fix build for lzo2 (bc,db,ruzsi)
+	rfe780607 - new debian rc scripts (surgo)
+	
+3.0.0:
+	Configure looks for liblzo2 when available. (bc)
+	
+3.0.0-pre2:
+	obsoleted linux/tap_dev (mjt)
+	fixed Bug#1062819 - multi killold parsing bug (dpf)	
+	changed rpm macros to support '--with socks' syntax (bc)
+	changed rpm macros to support '--without lzo' syntax (bc)
+	reworked rpm macro matrix for various distros (bc)
+	started on UNSUPPORTED rpmbuild option (bc)
+	Fixed Bug#1176343 SIGINT kills foreground server process (bc)
+	Added RFE#936523 Bind VTun Server to Specific Interface (bc)
+	Completely Rewrote the Bind To Specific Interface (alan grow)
+	
+3.0.0-pre1:
+	Implementation of Nickolai 'kolya' Zeldovich's mlockall() patch	(bc)
+	Some cleanup with respect to SSL on Apple (dpf)
+	Added upper time bound to packet-based resync to reduce resync
+	delay (dpf)
+	Added xinetd prototype file for vtund (bc)
+	added missing --with-blowfish-headers=DIR option (Daniel Macks)
+	
+3.0.0-pre0:
+	Added multiple cipher support. (dpf)
+	Added multiple cipher modes support. (dpf)
+	Added support for different sized keys. (dpf)
+	Re-sync ciphers when using non-ECB modes over a UDP
+	connection. (dpf)
+	Fixed Bug#908824 (persist=keep not re-applying routes) (dpf)
+
+ver 2.6:
+	No changes;  just renumber.
+	
+ver 2.5.3:
+	$DESTDIR in makefile for packaging glee (PLD)
+	Tighter code in generic/pty_dev.c where available (PLD)
+	Various spec file improvements from (PLD)
+	
+ver 2.5.2:
+	Configure fixes, to ensure vtun will build under Mac OS/X (Kurt Werle)
+	exclude <rand.h> #inclusion under OS/X
+
+ver 2.5.1:
+	Cleanups, reformat code, Automake improvements (Greg)
+
+	Improvement of Special SuSE init files (Willems Luc)
+	Spec file improvements and testing under SuSE (Willems Luc)
+	PLD build patch from Arkadiusz Miskiewicz
+
+	re-execute up-commands on re-up under persist-keep (David Kimdon, Leo Bergolth)
+	prevent reentering syslog in signal handlers (Leo Bergolth)
+	fd leak in tunnel.c (David Kimdon, Leo Bergolth)
+	fix configure wrt openSSL and SASL to pick correct MD5.h (Leo Bergolth)
+	prevent closing non-existant stat file (Edan Ayal)
+	minor packaging improvements (Bishop Clark)
+
+ver 2.5:
+	 New config option to keep tun device always open
+	 iproute support
+	 Fixes to support both Linux TUN/TAP drivers.
+
+ver 2.5b1:
+	 Encryption fixes: improved challenge generation, padding check.
+	 Config parser fixes. Don't allow empty passwords.
+	 New config option to specify syslog logging facility.
+	 Support for new Linux TUN/TAP driver.
+	 IO (read_n/write_n) cancellation.
+	 Signal handling and other minor fixes.
+	 Makefile improvement.
+	 Documentation update.
+
+ver 2.4:
+	 Configurable keep-alive. Fix for 0 compression level.
+	 RPM package and documentation update.
+
+ver 2.4b2:
+	 TCP driver fixes. Modules and frame handling optimizations.
+	 Configure options to disable LZO, ZLIB, OpenSSL and Shaper support.
+	 Cleanups. Documentation update.
+
+ver 2.4b1:
+	 Numerous stability fixes. TCP driver fixes.
+	 Improved TUN driver support for Solaris 8.
+	 Fixed incorrect error handling in read_n/write_n. 
+	 Signal handling fix. Persist mode fixes.
+	 Memory handling fixes. New config options.
+	 Command path parsing fix.
+	 Documentation update and spelling fixes.
+
+ver 2.3:
+	 Fixed incorrect error handling in UDP and TCP drivers. Makefile 
+	 improvements. RPM package fixes. Persist mode fixes. Fixed a 
+	 couple of memory and file descriptor leaks. Correct closing of 
+	 Solaris TUN device.
+	 Added man page for the configuration file. Documentation update. 
+	 Team members list update. 
+	 Upgrade is strongly recommended.
+
+ver 2.2:
+	 Added support for new OpenBSD tun driver. Fixes for generic tun 
+	 driver support. Configure extensions and fixes. Small cleanups. 
+	 Documentation update.
+
+ver 2.1:
+	 Final stable 2.1 release.
+         Small cleanups.
+
+ver 2.1b5:
+	 Fixed local address substitution for TCP connection.
+	 Fast, optimized udp_read function.
+         Scripts update.
+
+ver 2.1b4:
+         Bind UDP socket to the same address:port used for TCP connection. 
+         Fixed NOBUFS error handling for UDP sockets.
+	 Updated FreeBSD tun device support. 
+	 Removed host name size limitation.
+	 Parser and Makefile fixes.
+	 CVS source tree access.
+
+ver 2.1b3:
+	 Locking code rewrite, should fix race conditions. 
+	 Support for inetd and tcp wrapper. Several cleanups.
+	 Updated RPM spec. Initialization fixes.
+
+ver 2.1b2:
+	 Improved parser. New substitutions for command parameters
+	 (%a - local address, %A - remote address,...) allow to handle
+	 dynamic IPs more easily. Correct handling of single quotes and
+	 escaping '\'. Added 'reroute' script for Linux.
+         Configure fixes. Documentation update.
+
+ver 2.1b1:
+	 Correct closing of unsuccessfully connected sockets. UDP session 
+	 initialization fixes.
+	 New option 'multi', allows to gracefully handle multiple connections
+	 with the same host.
+	 New option 'srcaddr', allows to specify source address in form of 
+	 interface, host_name and port.
+	 Unified interface for network device drivers and protocols.
+	 Solaris TUN/TAP driver support. SOCKS support.
+	 Several cleanups and optimizations. Improved Makefile and Configure.
+	 Configure automatically searches for headers and libraries.
+	 Documentation update.
+	 Binary package now linked with latest OpenSSL and LZO libraries.
+	 Updated packages for RedHat, OpenBSD, NetBSD, FreeBSD, Solaris.
+
+ver 2.0: 
+	 Final 2.0 stable version. Small cleanups. Documentation and Web 
+	 site updates.
+
+ver 2.0b8: 
+         Config file parser fixes. Improved and simplified connection keep 
+         alive algorithm. Client lookups server address on every reconnect.
+	 Per host automatic statistic logs. Updated RPM package.
+	 Created FAQ. Massive documentation update. 
+
+ver 2.0b7: 
+         Added new LZO compression module. Compression works with UDP now. 
+	 Documentation update. 
+
+ver 2.0b6: 
+	 Problem with zombie processes on FreeBSD fixed. Correct statistic 
+	 dumps and other minor fixes.
+         Documentation update. Mailing list and web site mirror created.
+
+ver 2.0b5: 
+	 UDP connection drops and de-synchronization problems fixed. Optimized 
+	 read/write frame function for TCP and UDP. Compressor and shaper 
+	 cleanups. Persist mode fix. Longer delay after pppd start.
+	 Added configure options to specify libcrypto location. 
+	 Minor modules fix. Massive spelling fixes.
+         Ethernet support for FreeBSD. 
+	 UDP changes are not compatible with previous versions. 
+
+ver 2.0b4: 
+	 Just stupid :(( authentication bug, which broke 2.0b3, has been fixed.
+         Sorry for inconvenience. 
+	 Upgrade URGENTLY, 2.0b3 doesn't work !
+
+ver 2.0b3: 
+	 Support for plain IP tunneling via TUN device on Linux and FreeBSD.
+	 Ethernet support is always compiled and uses new TUN/TAP driver.
+	 Network device auto allocation works fine. No need to down net devices
+	 manually, TUN driver will do it. 
+	 Delay after PPP initialization, fixed problems with routing commands. 
+	 Fixed problem with oversized frames. 
+	 Several connection drop problems were fixed. 
+ 	 Minor authentication fix (upgrade both server and client).
+         More verbose logging. Several minor fixes.
+	 Uses setproctitle when available. 
+ 	 Created list with known problems and recommendations (README.Problems).
+
+ver 2.0b2: 
+	 Persist mode fixed, client now reconnects properly and doesn't
+	 eat up CPU. Correct signal handling and graceful termination.
+	 Several spelling and bug fixes.  
+
+ver 2.0b: Challenge based authentication (no more clear text passwords).
+	 BlowFish encryption. Compression levels. Connection keepalive. 
+	 UDP can detect broken connections. Better framing,
+	 no more frame fragmentation. Graceful connection close. 
+	 Config enhancements. New syntax for commands, it is possible to 
+	 run several commands now, separate command sets for established 
+	 and closed connection states.  
+	 Added 'device' statement to specify static tap device.
+	 Better Ethertap handling directly via netlink socket, which
+	 is much faster(broke tap device auto allocation). 
+	 Statistic dump on SIGUSR1. Solaris and FreeBSD ports. 
+	 Several bug fixes.  
+	 This version IS NOT COMPATIBLE with previous versions.
+
+ver 1.5: TCP was not set by default. Config parser fixes, better error
+	 reporting.
+	 Switched to GNU Autoconf(expecting reports). 
+
+ver 1.4: Shaper rewritten to not use floating point calculations. Errors
+	 reporting to stderr. Added client source address option '-L'. 
+	 RPM package improvements. Code cleanups. Minor config parser fixes.
+
+ver 1.3: Ethernet fixes: tunneled via UDP, fragmentation problem fixed, works 
+	 with normal mtu(1500). Preparations to support other protocols via 
+	 UDP, added new config option 'proto (udp/tcp)', currently used only 
+	 for Ethernet. 
+	 Minor config file parser fixes and improvements. Server creates PID 
+	 file now. Several typos corrected. 
+	 Startup scripts for several distributions take a look at 'scripts'
+	 directory.
+	 Contributors list created (see Credits), thanks them a lot. 
+
+ver 1.2: Completely new platform independent shaper, implemented as module, 
+	 compatible with compression, can shape Ethernet now, does not split 
+	 traffic to small chunks and does not add TCP overhead. 
+	 Read README.Shaper for more details. 
+	 Minor module list improvement. Code cleanup. Spelling corrections. 
+
+ver 1.1: Minor config parser fixes. Traffic handler modules optimizations and 
+	 enhancements. Minor tunnel initializer fixes. Fixed several compilation
+	 problems with some distributions and libc.
+
+ver 1.0: A lot of improvements and optimizations. 
+	 Enhanced config file. Code of the server and the client merged to 
+	 the one program 'vtund'. Now support not only PPP but SLIP, most 
+	 other serial protocol and programs and Ethernet tunnels via Linux
+	 EhterTap device. Modular architecture of handlers(compressor,
+	 encryptor,etc), it is easy to write a new handler now. Simple 
+	 encryption implemented. Minor shaper fixes. 
+
+VPPP renamed to VTun.
+
+ver 2.1: Some bug fixes. Now support deflate compression via zlib.
+	 This is the last release of VPPP, next release will be called
+	 VTUN(Virtual Tunnel) 1.0. It will support not only PPP but any 
+	 other protocols and programs which runs on tty ports.
+
+ver 2.0: A lot of code reworked and rewritten. Password based 
+	 authentication implemented. Config files parser improved
+	 and now friendly for spaces and other garbage :)).
+	 New config file with servers information for vppp. Shaper
+	 reworked(platform dependent constants added) and now can shape 
+	 assymetricly(inbound/outbound).
+	 This version is not compatible with previous ones due to 
+	 authentication changes.
+
+ver 1.2: Several bug fixes. Connection timeouts implemented.
+	 Performance improvements.  Code cleanups and optimizations.
+
+ver 1.1: A lot of enhancements and bug fixes. Traffic shaper functionality 
+	 added. 
+
+ver 1.0: First revision. Just basic functionality implemented. 

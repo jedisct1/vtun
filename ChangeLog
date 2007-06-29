@@ -1,3 +1,7 @@
+3.0.2:
+	rfe1744575 - cfg_file.y bugs (mf)
+	rfe1738167 - build on c5 still fails (bc)
+
 3.0.1:
 	rfe1602625 - fix build for lzo2 (bc,db,ruzsi)
 	rfe780607 - new debian rc scripts (surgo)

@@ -1,0 +1,268 @@
+dnl
+dnl VTun - Virtual Tunnel over TCP/IP network.
+dnl Copyright (C) 1998-2006  Maxim Krasnyansky <max_mk@yahoo.com>
+dnl
+dnl $Id: configure.in,v 1.19.2.1 2007/06/29 05:26:01 mtbishop Exp $
+dnl
+dnl Process this file with autoconf to produce a configure script.
+dnl
+
+AC_INIT(lib.c)
+AC_CONFIG_HEADER(config.h)
+
+dnl Shapper support
+AC_ARG_ENABLE(shaper,
+   --disable-shaper    	   Don not compile shaper module,
+   SHAPER=$enableval,
+   SHAPER=yes
+)
+dnl Encryption support
+AC_ARG_ENABLE(ssl,
+   --disable-ssl     	   Don not compile encryption module,
+   SSL=$enableval,
+   SSL=yes
+)
+dnl ZLIB support
+AC_ARG_ENABLE(zlib,
+   --disable-zlib     	   Don not compile ZLIB compression module,
+   ZLIB=$enableval,
+   ZLIB=yes
+)
+dnl LZO support
+AC_ARG_ENABLE(lzo,
+   --disable-lzo     	   Don not compile LZO compression module,
+   LZO=$enableval,
+   LZO=yes
+)
+dnl SOCKS support
+AC_ARG_ENABLE(socks,
+   --enable-socks     	   Compile with SOCKS support,
+   SOCKS=$enableval,
+   SOCKS=no
+)
+
+AC_ARG_WITH(ssl-headers,
+   --with-ssl-headers=DIR  Crypto Include files location,
+   SSL_HDR_DIR="$withval"
+   CPPFLAGS="$CPPFLAGS -I$withval" 
+)
+AC_ARG_WITH(ssl-lib,
+   --with-ssl-lib=DIR      Crypto Library location,
+   LIBS="$LIBS -L$withval" 
+)
+
+AC_ARG_WITH(lzo-headers,
+   --with-lzo-headers=DIR     LZO Include files location,
+   LZO_HDR_DIR="$withval"
+)
+AC_ARG_WITH(lzo-lib,
+   --with-lzo-lib=DIR         LZO Library location,
+   LIBS="$LIBS -L$withval" 
+)
+
+AC_ARG_WITH(blowfish-headers,
+   --with-blowfish-headers=DIR     Blowfish Include files location,
+   BLOWFISH_HDR_DIR="$withval"
+)
+
+AC_ARG_WITH(socks-lib,
+   --with-socks-lib=DIR         SOCKS Library location,
+   LIBS="$LIBS -L$withval" 
+)
+
+dnl Guess host type.
+AC_CANONICAL_HOST
+AC_CANONICAL_SYSTEM
+
+dnl Check for programs.
+AC_PROG_YACC
+AC_PROG_LEX
+AC_PROG_CC
+AC_PROG_INSTALL
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+
+dnl Check for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/resource.h netdb.h sched.h resolv.h arpa/inet.h)
+AC_CHECK_HEADERS(netinet/ip.h netinet/in.h netinet/tcp.h netinet/in_systm.h)
+AC_CHECK_HEADERS(libutil.h sys/sockio.h)
+
+dnl Check for libsocket
+AC_SEARCH_LIBS(socket, socket)
+
+dnl Check for libnsl
+AC_SEARCH_LIBS(inet_ntoa, nsl)
+
+dnl Check for libresolv
+AC_SEARCH_LIBS(gethostbyname, resolv nsl)
+
+dnl Check for librt
+AC_SEARCH_LIBS(nanosleep, rt posix4)
+
+dnl Check for setproctitle in libutil
+AC_SEARCH_LIBS(setproctitle, util bsd, AC_DEFINE(HAVE_SETPROC_TITLE) )
+
+if test "$SHAPER" = "yes"; then
+   AC_DEFINE(HAVE_SHAPER)
+fi
+
+if test "$ZLIB" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for ZLIB Library and Header files ... )
+   AC_CHECK_LIB(z, deflate,
+	LIBS="$LIBS -lz"
+	AC_DEFINE(HAVE_ZLIB),
+	AC_MSG_ERROR( Zlib library not found.)
+   )
+fi
+
+dnl very servicable code borrowed heavily from openvpn.
+if test "$LZO" = "yes"; then
+   LZOCHK=""
+   AC_MSG_RESULT()
+   AC_CHECKING( for LZO Library and Header files ... )
+   AC_SEARCH_HEADERS(lzo_asm.h,
+	$LZO_HDR_DIR /usr/include/lzo "" /usr/local/include,
+	LZOCHK="lzo2 lzo",
+   AC_SEARCH_HEADERS(lzo1x.h, 
+	$LZO_HDR_DIR /usr/include/lzo "" /usr/local/include,
+		LZOCHK="lzo",
+		AC_MSG_ERROR( LZO library not found. )
+		)
+	)
+
+   if test -n "$LZOCHK"; then
+      havelzo=0;
+      for I in $LZOCHK ; do
+         if test $havelzo = 0; then
+	    AC_CHECK_LIB($I, lzo1x_decompress,
+	    [
+	          LIBS="$LIBS -l"$I
+	       AC_DEFINE(HAVE_LZO)
+	          havelzo=1
+	      ]
+	    )
+	 fi
+      done
+      if test $havelzo = 0; then
+	    AC_MSG_ERROR( LZO library not found. )
+      fi
+   else
+        AC_MSG_ERROR( LZO headers not found. )
+   fi
+fi
+
+if test "$SSL" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for md5 Library and Header files ... )
+AC_SEARCH_HEADERS(md5.h,
+    $SSL_HDR_DIR /usr/include/openssl "" /usr/include /usr/include/ssl /usr/local/include /usr/local/ssl/include /usr/include/sys, 
+    ,
+    AC_MSG_ERROR( SSL headers not found. )
+   )
+fi
+
+if test "$SSL" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for blowfish Library and Header files ... )
+   AC_SEARCH_HEADERS(blowfish.h,
+    $BLOWFISH_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
+	AC_CHECK_LIB(crypto, BF_set_key,
+	    [
+	       LIBS="$LIBS -lcrypto"
+	       AC_DEFINE(HAVE_SSL)
+	       AC_DEFINE(HAVE_SSL_BLOWFISH)
+	    ],
+	    AC_MSG_ERROR( SSL library not found. )
+	),
+	AC_MSG_ERROR( SSL headers not found. )
+   )
+fi
+
+if test "$SSL" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for AES Library and Header files ... )
+   AC_SEARCH_HEADERS(aes.h,
+    $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
+	AC_CHECK_LIB(crypto, AES_set_encrypt_key,
+	    [
+	       AC_DEFINE(HAVE_SSL_AES)
+	    ],
+	    AC_MSG_ERROR( AES library not found. )
+	),
+	AC_MSG_ERROR( AES headers not found. )
+   )
+fi
+
+if test "$SSL" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for EVP Library and Header files ... )
+   AC_SEARCH_HEADERS(evp.h,
+    $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
+	AC_CHECK_LIB(crypto, EVP_EncryptInit,
+	    [
+	       AC_DEFINE(HAVE_SSL_EVP)
+	    ],
+	    AC_MSG_ERROR( EVP library not found. )
+	),
+	AC_MSG_ERROR( EVP headers not found. )
+   )
+fi
+
+if test "$SOCKS" = "yes"; then
+   AC_MSG_RESULT()
+   AC_CHECKING( for SOCKS Library ... )
+   AC_CHECK_LIB(socks5, SOCKSconnect,
+        [
+	  CFLAGS="$CFLAGS -DVTUN_SOCKS=1"
+	  LIBS="$LIBS -lsocks5"
+	],
+        AC_CHECK_LIB(socks, Rconnect,
+	    [
+	       CFLAGS="$CFLAGS -DVTUN_SOCKS=2"
+	       LIBS="$LIBS -lsocks"
+	    ],
+	    AC_MSG_ERROR( SOCKS library not found. )
+        )
+   )
+fi
+
+AC_MSG_RESULT()
+
+AC_CHECK_FUNCS([getpt grantpt unlockpt ptsname])
+
+OS_REL=`uname -r | tr -d '[A-Za-z\-\_\.]'`
+case $host_os in
+	*linux*)
+	     OS_DIR="linux"
+	     AC_CHECK_HEADERS(linux/if_tun.h)
+	     ;;
+	*solaris*)
+	     OS_DIR="svr4"
+	     ;;
+	*freebsd*)
+	     if test "$OS_REL" -ge "40"; then 
+	        OS_DIR="freebsd"
+	     fi
+	     ;;
+	*openbsd*)
+	     if test "$OS_REL" -ge "25"; then 
+	        OS_DIR="openbsd"
+	     fi
+	     ;;
+esac	     
+AC_LINK_DRV(`cat vtun.drivers`, $OS_DIR)
+
+AC_MSG_RESULT()
+
+dnl Build release name
+changequote(<,>)
+REL=`echo 'BRANCH-3_X' | tr -d '$: \-' | sed 's/^[A-Za-z]*//' | sed 's/\_/\./'`
+changequote([,])
+
+AC_DEFINE_UNQUOTED(VTUN_VER, "$REL `date '+%m/%d/%Y'`")
+
+AC_OUTPUT(Makefile)

@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: linkfd.h,v 1.4.2.1 2007/06/29 05:26:21 mtbishop Exp $
+ * $Id: linkfd.h,v 1.4.2.2 2008/01/07 22:12:56 mtbishop Exp $
  */ 
 
 #ifndef _LINKFD_H
@@ -87,6 +87,7 @@ struct lfd_mod {
 extern struct lfd_mod lfd_zlib;
 extern struct lfd_mod lfd_lzo;
 extern struct lfd_mod lfd_encrypt;
+extern struct lfd_mod lfd_legacy_encrypt;
 extern struct lfd_mod lfd_shaper;
 
 #endif

@@ -17,27 +17,12 @@
  */
 
 /*
- * $Id: netlib.h,v 1.5.2.2 2008/01/07 22:35:58 mtbishop Exp $
+ * $Id: tap_dev.c,v 1.4.2.1 2008/01/07 22:36:21 mtbishop Exp $
  */ 
 
-#ifndef _VTUN_NETDEV_H
-#define _VTUN_NETDEV_H
-
-#include "config.h"
-#include <errno.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
-unsigned long getifaddr(char * ifname);
-int connect_t(int s, struct sockaddr *svr, time_t timeout); 
-int udp_session(struct vtun_host *host); 
-
-int local_addr(struct sockaddr_in *addr, struct vtun_host *host, int con);
-int server_addr(struct sockaddr_in *addr, struct vtun_host *host);
-int generic_addr(struct sockaddr_in *addr, struct vtun_addr *vaddr);
-
-#endif /* _VTUN_NETDEV_H */
+/*
+    This is an empty file.  All functionality formerly here is moved
+    to the tun_dev.c file.  This file exists to prevent the automangle
+    tools from moving a tap_dev.c from the generic directory - which
+    we can't use - in place of this missing file.
+ */

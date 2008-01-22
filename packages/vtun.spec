@@ -1,4 +1,4 @@
-# $Id: vtun.spec,v 1.24.2.7 2008/01/22 09:20:05 mtbishop Exp $
+# $Id: vtun.spec,v 1.24.2.8 2008/01/22 09:37:51 mtbishop Exp $
 
 # By default, builds without socks-support.
 # To build with socks-support, issue:
@@ -19,7 +19,7 @@
 
 # expansion of the previous part.
 # get the distro mark (eg rh70)
-%define	_dis	%(rpm -qf /etc/issue 2>/dev/null|sed 's/-release//;s/redhat/rh/;s/mandrake/mdk/;s/fedora/fc/;s/openlinux/ol/;s/whitebox/wb/')
+%define	_dis	%(rpm -qf /etc/issue 2>/dev/null|sed 's/-release.*//;s/redhat/rh/;s/mandrake/mdk/;s/fedora/fc/;s/openlinux/ol/;s/whitebox/wb/')
 %define _tro	%(rpm -qf --qf "%%{version}" /etc/issue | sed 's/\\.//g' )
 
 %define	rc_dir_suse	/etc/init.d

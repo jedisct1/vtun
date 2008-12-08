@@ -1,3 +1,6 @@
+3.0.3:
+	rfe2149137 - makefile ignores LDFLAGS (sbk)
+
 3.0.2:
 	ref1685781 - vtun3 client should parse vtun2 server encr directives (hch)
 	rfe1744575 - cfg_file.y bugs (mf)

@@ -18,7 +18,7 @@
  */
 
 /*
- * $Id: cfg_file.y,v 1.8.2.2 2008/01/07 22:35:22 mtbishop Exp $
+ * $Id: cfg_file.y,v 1.8.2.3 2008/12/08 13:01:23 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -569,6 +569,12 @@ int free_host(void *d, void *u)
    llist_free(&h->down, free_cmd, NULL);
 
    free_addr(h);
+
+   /* releases only host struct instances which were
+    * allocated in the case of K_HOST except default_host */
+   if( h->passwd )
+      free(h);
+
  
    return 0;   
 }

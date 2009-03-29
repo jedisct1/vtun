@@ -146,3 +146,7 @@ Serge B. Khvatov <xbatob@users.sf.net>
 
 Yasuyuki <fryasu@yahoo.co.jp>
 	Mem leak in cfg_file.y (rfe2405993)
+
+Dragos Vingarzan <dragos.vingarzan@gmail.com>
+	Delayed UDP for unpredictable ports on bad NATs. (rfe2636157)
+

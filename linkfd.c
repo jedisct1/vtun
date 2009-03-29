@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: linkfd.c,v 1.13.2.3 2008/01/07 22:35:43 mtbishop Exp $
+ * $Id: linkfd.c,v 1.13.2.4 2009/03/29 10:08:54 mtbishop Exp $
  */
 
 #include "config.h"
@@ -211,8 +211,12 @@ int lfd_linker(void)
 	vtun_syslog(LOG_ERR,"Can't allocate buffer for the linker"); 
         return 0; 
      }
-
-     proto_write(fd1, buf, VTUN_ECHO_REQ);
+	
+     /* Delay sending of first UDP packet over broken NAT routers
+	because we will probably be disconnected.  Wait for the remote
+	end to send us something first, and use that connection. */
+     if (!VTUN_USE_NAT_HACK(lfd_host))
+        proto_write(fd1, buf, VTUN_ECHO_REQ);
 
      maxfd = (fd1 > fd2 ? fd1 : fd2) + 1;
 

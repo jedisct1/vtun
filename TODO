@@ -1,0 +1,20 @@
+
+netlib.c:196 - set a timeout for waiting for the remote UDP start
+
+NATHack
+
+ - unify the config as one (local) setting, and use a connection
+   cookie passed to coordinate which side goes passive.  The server
+   wins in all ties.  auth.c:195
+
+ - lose the global variable and move it into the vtun struct.  For
+   now.  main.c:54, vtun.h:111
+
+
+---
+
+Comments, suggestion, wishes and if possible patches are always welcome.
+Send them to vtun-users@lists.sourceforge.net .
+
+Bishop Clark <bishop@platypus.bc.ca>
+

@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: udp_proto.c,v 1.10.2.2 2008/01/07 22:36:19 mtbishop Exp $
+ * $Id: udp_proto.c,v 1.10.2.3 2009/03/29 10:09:13 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -56,11 +56,15 @@
 #include "vtun.h"
 #include "lib.h"
 
+extern int is_rmt_fd_connected; 
+
 /* Functions to read/write UDP frames. */
 int udp_write(int fd, char *buf, int len)
 {
      register char *ptr;
      register int wlen;
+
+     if (!is_rmt_fd_connected) return 0;
 
      ptr = buf - sizeof(short);
 
@@ -86,7 +90,25 @@ int udp_read(int fd, char *buf)
      unsigned short hdr, flen;
      struct iovec iv[2];
      register int rlen;
+     struct sockaddr_in from;
+     socklen_t fromlen = sizeof(struct sockaddr);
 
+     /* Late connect (NAT hack enabled) */
+     if (!is_rmt_fd_connected) {
+          while( 1 ){
+               if( (rlen = recvfrom(fd,buf,2,MSG_PEEK,(struct sockaddr *)&from,&fromlen)) < 0 ){ 
+                    if( errno == EAGAIN || errno == EINTR ) continue;
+                    else return rlen;
+               }
+               else break;
+          }               
+          if( connect(fd,(struct sockaddr *)&from,fromlen) ){
+               vtun_syslog(LOG_ERR,"Can't connect socket");
+               return -1;
+          }		
+          is_rmt_fd_connected = 1;
+     }
+     
      /* Read frame */
      iv[0].iov_len  = sizeof(short);
      iv[0].iov_base = (char *) &hdr;

@@ -1,5 +1,5 @@
 .\" Manual page for vtund.conf
-.\" $Id: vtund.conf.5,v 1.4.2.1 2007/06/29 05:26:47 mtbishop Exp $
+.\" $Id: vtund.conf.5,v 1.4.2.2 2009/03/29 10:09:08 mtbishop Exp $
 .TH VTUND.CONF 5
 
 .SH NAME
@@ -144,6 +144,33 @@ By default \fBvtund\fR(8) will automatically select available device.
 protocol to use.  By default, \fBvtund\fR(8) will use TCP protocol.
 UDP is recommended for \fBether\fR and \fBtun\fR tunnels only.
 This option is ignored by the client.
+
+.IP \fBnat_hack\ \fBclient\fR|\fBserver\fR|\fBno\fR
+side to use nat_hack on.  By default, \fBvtund\fR(8) uses a 'no' setting.
+The side that the NAT hack is enabled on will perform a delayed UDP socket
+connect. Should only be enabled for the side outside of the NAT (typically 
+the server)! Setting 'client' on the server or 'server' on the client is 
+ignored, as to make a single configuration file reusable on both sides.
+
+This is only relevant if you use \fBproto udp\fR. The NAT hack delays
+the UDP socket connect until the first UDP packet is received from the other
+side of the tunnel. The socket is then connected to the actual source port of
+the packet (on the NAT box) and not to the one indicated in the handshake 
+(which is behind NAT and probably unreachable). 
+The first echo request is also disabled on the side with the NAT hack enabled.
+
+Currently the mechanism works only for one side, for a single NAT traversal.
+If you enable it for both sides, both will wait for a first packet and the 
+tunnel will never transport any data.
+
+\fBSecurity warning!\fR Due to the nature of the delayed connection, the tunnel
+can be hijacked in theory by an attacker behind the same NAT, sending the first 
+UDP packet to the server UDP port, before the real client does. If you do not 
+understand the risks, or want to remain as secure as possible behind this kind
+of NAT router, use \fBproto tcp\fR as a NAT traversal solution.
+
+Because of the security issue mentioned above, this option might be disabled
+during compilation (configure --disable-nathack). 
 
 .IP \fBtimeout\ \fIsecounds\fR
 Connect timeout.

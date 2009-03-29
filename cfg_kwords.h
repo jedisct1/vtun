@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: cfg_kwords.h,v 1.6.2.2 2008/01/07 22:35:26 mtbishop Exp $
+ * $Id: cfg_kwords.h,v 1.6.2.3 2009/03/29 10:08:41 mtbishop Exp $
  */ 
 
 extern int lineno;
@@ -49,6 +49,8 @@ struct kword cfg_keyword[] = {
    { "encrypt",  K_ENCRYPT }, 
    { "type",	 K_TYPE }, 
    { "proto",	 K_PROT }, 
+   { "nat_hack", K_NAT_HACK },
+   { "delay_udp",K_NAT_HACK },
    { "device",	 K_DEVICE }, 
    { "ppp",	 K_PPP },
    { "ifconfig", K_IFCFG },
@@ -75,6 +77,8 @@ struct kword cfg_param[] = {
    { "tun",	 VTUN_TUN }, 
    { "tcp",      VTUN_TCP }, 
    { "udp",      VTUN_UDP }, 
+   { "client",   VTUN_NAT_HACK_CLIENT },
+   { "server",   VTUN_NAT_HACK_SERVER },   
    { "lzo",      VTUN_LZO }, 
    { "zlib",     VTUN_ZLIB }, 
    { "wait",	 1 },

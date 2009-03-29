@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: netlib.c,v 1.11.2.3 2009/03/29 10:08:59 mtbishop Exp $
+ * $Id: netlib.c,v 1.11.2.4 2009/03/29 10:44:02 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -147,6 +147,7 @@ int udp_session(struct vtun_host *host)
      struct sockaddr_in saddr; 
      short port;
      int s,opt;
+     extern int is_rmt_fd_connected;
 
      if( (s=socket(AF_INET,SOCK_DGRAM,0))== -1 ){
         vtun_syslog(LOG_ERR,"Can't create socket");

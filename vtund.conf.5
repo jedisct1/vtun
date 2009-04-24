@@ -1,5 +1,5 @@
 .\" Manual page for vtund.conf
-.\" $Id: vtund.conf.5,v 1.4.2.2 2009/03/29 10:09:08 mtbishop Exp $
+.\" $Id: vtund.conf.5,v 1.4.2.3 2009/04/24 09:15:41 mtbishop Exp $
 .TH VTUND.CONF 5
 
 .SH NAME
@@ -176,7 +176,7 @@ during compilation (configure --disable-nathack).
 Connect timeout.
 
 .IP \fBcompress\ \fImethod\fR[\fB:\fIlevel\fR]
-specifies compression method to use.  Compression \fImethod\fRs includes:
+specifies compression method to use.  Compression \fImethod\fRs include:
 .RS
 .IP \fBno\fR
 no compression
@@ -190,9 +190,54 @@ LZO compression (if compiled in)
 .IP
 You can also specify \fIlevel\fR of compression using one
 digit (1 is best speed, 9 is best compression ratio).
-This option ignored by the client.
-.IP \fBencrypt\ \fByes\fR|\fBno\fR
-enable or disable encryption.  This option ignored by the client.
+This option is ignored by the client.
+
+.IP \fBencrypt\ \fImethod\fR[\fB:\fIlevel\fR]
+specifies encryption method to use.  Encryption \fImethod\fRs include:
+.RS
+.IP \fBno\fR
+no encryption
+.IP \fByes\fR
+default encryption method (\fBblowfish128ecb\fR)
+.IP \fBblowfish128ecb\fR
+Blowfish cipher, 128 bit key, mode ECB
+.IP \fBblowfish128cbc\fR
+Blowfish cipher, 128 bit key, mode CBC
+.IP \fBblowfish128cfb\fR
+Blowfish cipher, 128 bit key, mode CFB
+.IP \fBblowfish128ofb\fR
+Blowfish cipher, 128 bit key, mode OFB
+.IP \fBblowfish256ecb\fR
+Blowfish cipher, 256 bit key, mode ECB
+.IP \fBblowfish256cbc\fR
+Blowfish cipher, 256 bit key, mode CBC
+.IP \fBblowfish256cfb\fR
+Blowfish cipher, 256 bit key, mode CFB
+.IP \fBblowfish256ofb\fR
+Blowfish cipher, 256 bit key, mode OFB
+.IP \fBaes128ecb\fR
+.IP \fBoldblowfish128ecb\fR
+Blowfish cipher, 128bit key, mode ECB 
+ (for use with 2.6 clients only)
+AES cipher, 128 bit key, mode ECB
+.IP \fBaes128cbc\fR
+AES cipher, 128 bit key, mode CBC
+.IP \fBaes128cfb\fR
+AES cipher, 128 bit key, mode CFB
+.IP \fBaes128ofb\fR
+AES cipher, 128 bit key, mode OFB
+.IP \fBaes256ecb\fR
+AES cipher, 256 bit key, mode ECB
+.IP \fBaes256cbc\fR
+AES cipher, 256 bit key, mode CBC
+.IP \fBaes256cfb\fR
+AES cipher, 256 bit key, mode CFB
+.IP \fBaes256ofb\fR
+AES cipher, 256 bit key, mode OFB
+.RE
+.IP
+This option is ignored by the client.
+
 .IP \fBkeepalive\ \fByes\fR|\fBno\fR
 enable or disable connection keep-alive.
 This option is ignored by the client.

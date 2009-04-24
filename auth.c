@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: auth.c,v 1.9.2.3 2008/01/07 22:35:18 mtbishop Exp $
+ * $Id: auth.c,v 1.9.2.4 2009/04/24 09:15:33 mtbishop Exp $
  */ 
 
 /*
@@ -169,8 +169,13 @@ char *bf2cf(struct vtun_host *host)
      if( host->flags & VTUN_KEEP_ALIVE )
 	*(ptr++) = 'K';
 
-     if( host->flags & VTUN_ENCRYPT )
-	ptr += sprintf(ptr,"E%d", host->cipher);
+     if( host->flags & VTUN_ENCRYPT ) {
+        if (host->cipher == VTUN_LEGACY_ENCRYPT) { /* use old flag method */
+	   ptr += sprintf(ptr,"E");
+	} else {
+	   ptr += sprintf(ptr,"E%d", host->cipher);
+	}
+     }
 
      strcat(ptr,">");
 

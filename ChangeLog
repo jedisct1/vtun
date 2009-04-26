@@ -2,9 +2,10 @@
 	rfe2636157 - Delayed UDP connection (dv)
 	rfe2149137 - makefile ignores LDFLAGS (sbk)
 	rfe2405993 - mem leak in config parser (frY)
-
+	rfe1685781 - vtun3 server should offer vtun2-compatible encryption (if)
+	
 3.0.2:
-	ref1685781 - vtun3 client should parse vtun2 server encr directives (hch)
+	rfe1685781 - vtun3 client should parse vtun2 server encr directives (hch)
 	rfe1744575 - cfg_file.y bugs (mf)
 	rfe1738167 - build on c5 still fails (bc)
 

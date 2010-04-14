@@ -18,7 +18,7 @@
  */
 
 /*
- * $Id: cfg_file.y,v 1.8.2.3 2008/12/08 13:01:23 mtbishop Exp $
+ * $Id: cfg_file.y,v 1.8.2.4 2010/04/14 08:48:09 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -74,7 +74,7 @@ int yyerror(char *s);
 %token K_OPTIONS K_DEFAULT K_PORT K_BINDADDR K_PERSIST K_TIMEOUT
 %token K_PASSWD K_PROG K_PPP K_SPEED K_IFCFG K_FWALL K_ROUTE K_DEVICE 
 %token K_MULTI K_SRCADDR K_IFACE K_ADDR
-%token K_TYPE K_PROT K_COMPRESS K_ENCRYPT K_KALIVE K_STAT
+%token K_TYPE K_PROT K_NAT_HACK K_COMPRESS K_ENCRYPT K_KALIVE K_STAT
 %token K_UP K_DOWN K_SYSLOG K_IPROUTE
 
 %token <str> K_HOST K_ERROR
@@ -319,6 +319,15 @@ host_option: '\n'
   | K_PROT NUM 		{  
 			  parse_host->flags &= ~VTUN_PROT_MASK;
 			  parse_host->flags |= $2;
+			}
+			
+  | K_NAT_HACK NUM 		{  
+              #ifdef ENABLE_NAT_HACK
+			  	parse_host->flags &= ~VTUN_NAT_HACK_MASK;
+			  	parse_host->flags |= $2;
+			  #else
+			  	cfg_error("This vtund binary was built with the NAT hack disabled for security purposes.");
+			  #endif
 			}
 
   | K_SRCADDR 		'{' srcaddr_options '}'
@@ -585,6 +594,27 @@ int free_host(void *d, void *u)
 inline struct vtun_host* find_host(char *host)
 {
    return (struct vtun_host *)llist_free(&host_list, free_host, host);
+}
+
+int clear_nat_hack_server(void *d, void *u)
+{
+	((struct vtun_host*)d)->flags &= ~VTUN_NAT_HACK_CLIENT;
+	return 0;
+}
+
+int clear_nat_hack_client(void *d, void *u)
+{
+	((struct vtun_host*)d)->flags &= ~VTUN_NAT_HACK_SERVER;
+	return 0;
+}
+
+/* Clear the VTUN_NAT_HACK flag which are not relevant to the current operation mode */
+inline void clear_nat_hack_flags(int svr)
+{
+	if (svr)
+		llist_trav(&host_list,clear_nat_hack_server,NULL);
+	else 
+		llist_trav(&host_list,clear_nat_hack_client,NULL);
 }
 
 inline void free_host_list(void)

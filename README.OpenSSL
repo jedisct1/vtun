@@ -1,0 +1,20 @@
+
+The dual-license on OpenSSL clashes with the more restrictive GPL
+licensing on VTun.  In most cases, an exemption on the GPL-licensed
+product is ultimately required to ensure no barrier exists to using it
+with a project licensed under a less restrictive license, legally
+speaking.
+
+Historically, VTun binaries have been linked with OpenSSL encryption
+libraries and distributed in combination.  A de-facto licensing
+exemption has openly existed only with respect to linking VTun code
+against OpenSSL libraries as well as distribution within projects also
+incorporating OpenSSL.  To that end, and to clear up a question about
+linking raised with OpenSSL, a special exemption is hereby granted:
+
+Permission is given to link the code of this program with the OpenSSL
+library, or with modified versions of OpenSSL that use the same
+license as OpenSSL, and to distribute linked combinations including
+the two, so long as no other component within this program or the
+resulting distribution forbids a coupling.
+

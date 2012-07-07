@@ -2,3 +2,7 @@ config.status
 config.log
 config.h
 Makefile
+cfg_file.lex.c
+cfg_file.tab.c
+cfg_file.tab.h
+vtund

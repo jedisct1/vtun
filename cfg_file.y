@@ -18,7 +18,7 @@
  */
 
 /*
- * $Id: cfg_file.y,v 1.8.2.4 2010/04/14 08:48:09 mtbishop Exp $
+ * $Id: cfg_file.y,v 1.8.2.5 2012/07/07 07:14:17 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -377,7 +377,7 @@ keepalive:
 			  if( yylval.dnum.num1 ){
 			     parse_host->flags |= VTUN_KEEP_ALIVE;
 			     parse_host->ka_interval = yylval.dnum.num1;
-		             parse_host->ka_failure  = yylval.dnum.num2;
+		             parse_host->ka_maxfail  = yylval.dnum.num2;
 			  }
   			}
 

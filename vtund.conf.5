@@ -1,5 +1,5 @@
 .\" Manual page for vtund.conf
-.\" $Id: vtund.conf.5,v 1.4.2.3 2009/04/24 09:15:41 mtbishop Exp $
+.\" $Id: vtund.conf.5,v 1.4.2.4 2012/07/07 07:14:17 mtbishop Exp $
 .TH VTUND.CONF 5
 
 .SH NAME
@@ -237,10 +237,11 @@ AES cipher, 256 bit key, mode OFB
 .RE
 .IP
 This option is ignored by the client.
-
-.IP \fBkeepalive\ \fByes\fR|\fBno\fR
-enable or disable connection keep-alive.
-This option is ignored by the client.
+.IP \fBkeepalive\ \fByes\fR|\fBno\fR|\fIinterval\fB:\fIcount\fR
+enable or disable connection keep-alive. Time \fIinterval\fR is a period
+between connection checks, in seconds, and \fIcount\fR is the maximum number
+of retries (\fByes\fR = \fI30\fB:\fI4\fR).
+This option is ignored by the server.
 .IP \fBstat\ \fByes\fR|\fBno\fR
 enable or disable statistics.  If enabled \fBvtund\fR(8) will log
 statistic counters to /var/log/vtund/session_X every 5 minutes.

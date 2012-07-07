@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: linkfd.c,v 1.13.2.4 2009/03/29 10:08:54 mtbishop Exp $
+ * $Id: linkfd.c,v 1.13.2.5 2012/07/07 07:14:17 mtbishop Exp $
  */
 
 #include "config.h"
@@ -175,20 +175,38 @@ static void sig_hup(int sig)
      linker_term = VTUN_SIG_HUP;
 }
 
-/* Statistic dump */
+/* Statistic dump and keep-alive monitor */
+static volatile sig_atomic_t ka_need_verify = 0;
+static time_t stat_timer = 0, ka_timer = 0; 
+
 void sig_alarm(int sig)
 {
-     static time_t tm;
+     static time_t tm_old, tm = 0;
      static char stm[20];
-  
+ 
+     tm_old = tm;
      tm = time(NULL);
-     strftime(stm, sizeof(stm)-1, "%b %d %H:%M:%S", localtime(&tm)); 
-     fprintf(lfd_host->stat.file,"%s %lu %lu %lu %lu\n", stm, 
-	lfd_host->stat.byte_in, lfd_host->stat.byte_out,
-	lfd_host->stat.comp_in, lfd_host->stat.comp_out); 
-     
-     alarm(VTUN_STAT_IVAL);
-}    
+
+     if( (lfd_host->flags & VTUN_KEEP_ALIVE) && (ka_timer -= tm-tm_old) <= 0){
+	ka_need_verify = 1;
+	ka_timer = lfd_host->ka_interval
+	  + 1; /* We have to complete select() on idle */
+     }
+
+     if( (lfd_host->flags & VTUN_STAT) && (stat_timer -= tm-tm_old) <= 0){
+        strftime(stm, sizeof(stm)-1, "%b %d %H:%M:%S", localtime(&tm)); 
+        fprintf(lfd_host->stat.file,"%s %lu %lu %lu %lu\n", stm, 
+	   lfd_host->stat.byte_in, lfd_host->stat.byte_out,
+	   lfd_host->stat.comp_in, lfd_host->stat.comp_out); 
+	stat_timer = VTUN_STAT_IVAL;
+     }
+
+     if ( ka_timer*stat_timer ){
+       alarm( (ka_timer < stat_timer) ? ka_timer : stat_timer );
+     } else {
+       alarm( (ka_timer) ? ka_timer : stat_timer );
+     }
+}
 
 static void sig_usr1(int sig)
 {
@@ -238,6 +256,21 @@ int lfd_linker(void)
 	   else
 	      continue;
 	} 
+
+	if( ka_need_verify ){
+	  if( idle > lfd_host->ka_maxfail ){
+	    vtun_syslog(LOG_INFO,"Session %s network timeout", lfd_host->host);
+	    break;
+	  }
+	  if (idle++ > 0) {  /* No input frames, check connection with ECHO */
+	    if( proto_write(fd1, buf, VTUN_ECHO_REQ) < 0 ){
+	      vtun_syslog(LOG_ERR,"Failed to send ECHO_REQ");
+	      break;
+	    }
+	  }
+	  ka_need_verify = 0;
+	}
+
 	if (send_a_packet)
         {
            send_a_packet = 0;
@@ -249,35 +282,11 @@ int lfd_linker(void)
 	      break;
 	   lfd_host->stat.comp_out += tmplen; 
         }
-	if( !len ){
-           if (send_a_packet)
-           {
-              send_a_packet = 0;
-              tmplen = 1;
-	      lfd_host->stat.byte_out += tmplen; 
-   	      if( (tmplen=lfd_run_down(tmplen,buf,&out)) == -1 )
-	         break;
-	      if( tmplen && proto_write(fd1, out, tmplen) < 0 )
-	         break;
-	      lfd_host->stat.comp_out += tmplen; 
-           }
-	   /* We are idle, lets check connection */
-	   if( lfd_host->flags & VTUN_KEEP_ALIVE ){
-	      if( ++idle > lfd_host->ka_failure ){
-	         vtun_syslog(LOG_INFO,"Session %s network timeout", lfd_host->host);
-		 break;	
-	      }
-	      /* Send ECHO request */
-	      if( proto_write(fd1, buf, VTUN_ECHO_REQ) < 0 )
-		 break;
-	   }
-	   continue;
-	}	   
 
 	/* Read frames from network(fd1), decode and pass them to 
          * the local device (fd2) */
 	if( FD_ISSET(fd1, &fdset) && lfd_check_up() ){
-	   idle = 0; 
+	   idle = 0;  ka_need_verify = 0;
 	   if( (len=proto_read(fd1, buf)) <= 0 )
 	      break;
 
@@ -296,7 +305,7 @@ int lfd_linker(void)
 		 continue;
 	      }
    	      if( fl==VTUN_ECHO_REP ){
-		 /* Just ignore ECHO reply */
+		 /* Just ignore ECHO reply, ka_need_verify==0 already */
 		 continue;
 	      }
 	      if( fl==VTUN_CONN_CLOSE ){
@@ -388,6 +397,15 @@ int linkfd(struct vtun_host *host)
      sa.sa_handler=sig_hup;
      sigaction(SIGHUP,&sa,&sa_oldhup);
 
+     /* Initialize keep-alive timer */
+     if( host->flags & (VTUN_STAT|VTUN_KEEP_ALIVE) ){
+        sa.sa_handler=sig_alarm;
+        sigaction(SIGALRM,&sa,NULL);
+
+	alarm( (host->ka_interval < VTUN_STAT_IVAL) ?
+		host->ka_interval : VTUN_STAT_IVAL );
+     }
+
      /* Initialize statstic dumps */
      if( host->flags & VTUN_STAT ){
 	char file[40];
@@ -400,7 +418,6 @@ int linkfd(struct vtun_host *host)
 	sprintf(file,"%s/%.20s", VTUN_STAT_DIR, host->host);
 	if( (host->stat.file=fopen(file, "a")) ){
 	   setvbuf(host->stat.file, NULL, _IOLBF, 0);
-	   alarm(VTUN_STAT_IVAL);
 	} else
 	   vtun_syslog(LOG_ERR, "Can't open stats file %s", file);
      }
@@ -409,7 +426,7 @@ int linkfd(struct vtun_host *host)
 
      lfd_linker();
 
-     if( host->flags & VTUN_STAT ){
+     if( host->flags & (VTUN_STAT|VTUN_KEEP_ALIVE) ){
         alarm(0);
 	if (host->stat.file)
 	  fclose(host->stat.file);

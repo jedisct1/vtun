@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: main.c,v 1.9.2.3 2009/03/29 10:08:57 mtbishop Exp $
+ * $Id: main.c,v 1.9.2.4 2012/07/07 07:14:17 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -86,7 +86,7 @@ int main(int argc, char *argv[], char *env[])
      default_host.multi   = VTUN_MULTI_ALLOW;
      default_host.timeout = VTUN_CONNECT_TIMEOUT;
      default_host.ka_interval = 30;
-     default_host.ka_failure  = 4;
+     default_host.ka_maxfail  = 4;
      default_host.loc_fd = default_host.rmt_fd = -1;
 
      /* Start logging to syslog and stderr */

@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: vtun.h,v 1.12.2.4 2009/03/29 10:09:11 mtbishop Exp $
+ * $Id: vtun.h,v 1.12.2.5 2012/07/07 07:14:17 mtbishop Exp $
  */ 
 
 #ifndef _VTUN_H
@@ -107,7 +107,7 @@ struct vtun_host {
 
    /* Keep Alive */
    int ka_interval;
-   int ka_failure;
+   int ka_maxfail;
 
    /* Source address */
    struct vtun_addr src_addr;

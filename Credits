@@ -152,3 +152,7 @@ Dragos Vingarzan <dragos.vingarzan@gmail.com>
 
 Sergey Popov (Pinkbyte) <@pinkbyte.ru>
 	Parallel make Makefile.in race condition (rfe3540779)
+
+Eugene Berdnikov
+	Link timeout in UDP mode (deb339364)
+	Types cleanup

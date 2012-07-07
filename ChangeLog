@@ -3,6 +3,7 @@
 	rfe2149137 - makefile ignores LDFLAGS (sbk)
 	rfe2405993 - mem leak in config parser (frY)
 	rfe1685781 - vtun3 server should offer vtun2-compatible encryption (if)
+	rfe3540779 - Parallel make Makefile.in race condition (pb)
 	
 3.0.2:
 	rfe1685781 - vtun3 client should parse vtun2 server encr directives (hch)

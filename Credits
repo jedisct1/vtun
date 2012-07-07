@@ -150,3 +150,5 @@ Yasuyuki <fryasu@yahoo.co.jp>
 Dragos Vingarzan <dragos.vingarzan@gmail.com>
 	Delayed UDP for unpredictable ports on bad NATs. (rfe2636157)
 
+Sergey Popov (Pinkbyte) <@pinkbyte.ru>
+	Parallel make Makefile.in race condition (rfe3540779)

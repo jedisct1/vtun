@@ -1,4 +1,4 @@
-# $Id: vtun.spec,v 1.24.2.8 2008/01/22 09:37:51 mtbishop Exp $
+# $Id: vtun.spec,v 1.24.2.9 2012/07/08 10:30:27 mtbishop Exp $
 
 # By default, builds without socks-support.
 # To build with socks-support, issue:
@@ -14,7 +14,7 @@
 
 # define variables here for older RPM versions.
 %define name	vtun
-%define version	3.0.2
+%define version	3.0.3
 %define release	1
 
 # expansion of the previous part.
@@ -38,10 +38,10 @@
 Name: 		%{name}
 Version: 	%{version}
 Release: 	%{release}
-License: 	GPL
+License: 	GPL2
 Group: 		System Environment/Daemons
 Url: 		http://vtun.sourceforge.net/
-Source: 	http://vtun.sourceforge.net/%{name}-%{version}.tar.gz
+Source0: 	http://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Summary: 	Virtual tunnel over TCP/IP networks.
 Summary(pl):	Wirtualne tunele poprzez sieci TCP/IP
 Vendor: 	Maxim Krasnyansky <max_mk@yahoo.com>
@@ -53,6 +53,7 @@ BuildRequires: 	bison
 BuildRequires: 	flex
 BuildRequires: 	autoconf
 BuildRequires: 	automake
+Requires:	xinetd
 
 # must specify like so to get the right package for gcc (eg ecgs)
 BuildRequires:  %{_bindir}/gcc
@@ -125,7 +126,7 @@ protoko³ów szeregowych.
 %if "%_dis" == "suse"
 %{__make} LOCK_DIR=%{lock_dir} STAT_DIR=/var/log/vtunnel
 %else
-%{__make}
+%{__make} %{?_smp_mflags}
 %endif
 
 %install
@@ -177,17 +178,18 @@ sbin/insserv etc/init.d/vtund
 [ $RPM_BUILD_ROOT != / ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(644,root,root)
-%doc ChangeLog Credits FAQ README README.Setup README.Shaper TODO
+%defattr(-,root,root,-)
+%doc ChangeLog Credits FAQ README README.LZO README.Setup README.Shaper TODO vtund.conf
 %doc TODO vtund.conf 
-%attr(755,root,root) %config %{rc_dir}/vtund
-%attr(600,root,root) %config(noreplace) /etc/vtund.conf
-%attr(755,root,root) %{_sbindir}/vtund
+%config(noreplace) %{_sysconfdir}/vtund.conf
+%config(noreplace) %{_sysconfdir}/xinetd.d/vtun
+%config %{rc_dir}/vtund
+%{_sbindir}/vtund
 %attr(755,root,root) %dir %{log_dir}
 %attr(755,root,root) %dir %{lock_dir}
-%{_mandir}/man8/vtun*.8*
 %{_mandir}/man5/vtund.conf.5*
-/etc/xinetd.d/vtun
+%{_mandir}/man8/vtun.8*
+%{_mandir}/man8/vtund.8*
 %if "%_dis" == "suse"
 %attr(755,root,root) %{_sbindir}/rcvtund
 /var/adm/fillup-templates/rc.config.vtund

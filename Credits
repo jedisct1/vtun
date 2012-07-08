@@ -156,3 +156,6 @@ Sergey Popov (Pinkbyte) <@pinkbyte.ru>
 Eugene Berdnikov
 	Link timeout in UDP mode (deb339364)
 	Types cleanup
+
+Sean MacLennan
+	Reduce connection chatter 

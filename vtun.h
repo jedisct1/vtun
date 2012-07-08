@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: vtun.h,v 1.12.2.5 2012/07/07 07:14:17 mtbishop Exp $
+ * $Id: vtun.h,v 1.12.2.6 2012/07/08 05:32:57 mtbishop Exp $
  */ 
 
 #ifndef _VTUN_H
@@ -219,6 +219,7 @@ struct vtun_opts {
    struct vtun_addr bind_addr;	 /* Server should listen on this address */
    int  svr_type;	 /* Server mode */
    int  syslog; 	 /* Facility to log messages to syslog under */
+   int  quiet;		 /* Be quiet about common errors */
 };
 #define VTUN_STAND_ALONE	0 
 #define VTUN_INETD		1	

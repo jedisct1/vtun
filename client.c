@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: client.c,v 1.11.2.2 2008/01/07 22:35:27 mtbishop Exp $
+ * $Id: client.c,v 1.11.2.3 2012/07/08 05:32:57 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -126,10 +126,12 @@ void client(struct vtun_host *host)
 	io_init();
 
 	set_title("%s connecting to %s", host->host, vtun.svr_name);
-        vtun_syslog(LOG_INFO,"Connecting to %s", vtun.svr_name);
+	if (!vtun.quiet)
+	   vtun_syslog(LOG_INFO,"Connecting to %s", vtun.svr_name);
 
         if( connect_t(s,(struct sockaddr *) &svr_addr, host->timeout) ){
-	   vtun_syslog(LOG_INFO,"Connect to %s failed. %s(%d)", vtun.svr_name,
+	   if (!vtun.quiet || errno != ETIMEDOUT)
+	      vtun_syslog(LOG_INFO,"Connect to %s failed. %s(%d)", vtun.svr_name,
 					strerror(errno), errno);
         } else {
 	   if( auth_client(s, host) ){   

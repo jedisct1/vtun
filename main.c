@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: main.c,v 1.9.2.4 2012/07/07 07:14:17 mtbishop Exp $
+ * $Id: main.c,v 1.9.2.5 2012/07/08 05:32:57 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -92,7 +92,7 @@ int main(int argc, char *argv[], char *env[])
      /* Start logging to syslog and stderr */
      openlog("vtund", LOG_PID | LOG_NDELAY | LOG_PERROR, LOG_DAEMON);
 
-     while( (opt=getopt(argc,argv,"misf:P:L:t:np")) != EOF ){
+     while( (opt=getopt(argc,argv,"misf:P:L:t:npq")) != EOF ){
 	switch(opt){
 	    case 'm':
 	        if (mlockall(MCL_CURRENT | MCL_FUTURE) < 0) {
@@ -123,6 +123,9 @@ int main(int argc, char *argv[], char *env[])
 	    case 't':
 	        vtun.timeout = atoi(optarg);	
 	        break;
+	    case 'q':
+		vtun.quiet = 1;
+		break;
 	    default:
 		usage();
 	        exit(1);

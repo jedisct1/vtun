@@ -10,6 +10,13 @@ NATHack
  - lose the global variable and move it into the vtun struct.  For
    now.  main.c:54, vtun.h:111
 
+ - generally clean up the cfg_file.y and main.c stuff.  
+
+2.6 compatibility
+
+ - has to remain.
+
+ - needs a cleanup too, so the redundant file isn't in there.
 
 ---
 

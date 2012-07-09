@@ -10,6 +10,7 @@
 	              to man page and vtund.conf sample.
  	             Remove doubled if(send_a_file){...} block in linkfd.c.
 	pat2951972 - reduce connection chatter
+	rfe2711212 - improve linking on rebuilds (hmld)
 	
 3.0.2:
 	rfe1685781 - vtun3 client should parse vtun2 server encr directives (hch)

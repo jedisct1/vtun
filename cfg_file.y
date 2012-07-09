@@ -18,7 +18,7 @@
  */
 
 /*
- * $Id: cfg_file.y,v 1.8.2.5 2012/07/07 07:14:17 mtbishop Exp $
+ * $Id: cfg_file.y,v 1.8.2.6 2012/07/09 01:01:08 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -321,13 +321,13 @@ host_option: '\n'
 			  parse_host->flags |= $2;
 			}
 			
-  | K_NAT_HACK NUM 		{  
-              #ifdef ENABLE_NAT_HACK
-			  	parse_host->flags &= ~VTUN_NAT_HACK_MASK;
-			  	parse_host->flags |= $2;
-			  #else
-			  	cfg_error("This vtund binary was built with the NAT hack disabled for security purposes.");
-			  #endif
+  | K_NAT_HACK NUM 	{  
+#ifdef ENABLE_NAT_HACK
+			  parse_host->flags &= ~VTUN_NAT_HACK_MASK;
+			  parse_host->flags |= $2;
+#else
+			  cfg_error("This vtund binary was built with the NAT hack disabled for security purposes.");
+#endif
 			}
 
   | K_SRCADDR 		'{' srcaddr_options '}'

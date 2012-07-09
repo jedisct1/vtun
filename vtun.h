@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: vtun.h,v 1.12.2.6 2012/07/08 05:32:57 mtbishop Exp $
+ * $Id: vtun.h,v 1.12.2.7 2012/07/09 01:01:08 mtbishop Exp $
  */ 
 
 #ifndef _VTUN_H
@@ -231,5 +231,6 @@ void client(struct vtun_host *host);
 int  tunnel(struct vtun_host *host);
 int  read_config(char *file);
 struct vtun_host * find_host(char *host);
+inline void clear_nat_hack_flags(int svr);
 
 #endif

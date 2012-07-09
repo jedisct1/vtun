@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: server.c,v 1.9.2.2 2008/01/07 22:36:01 mtbishop Exp $
+ * $Id: server.c,v 1.9.2.3 2012/07/09 01:01:08 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -49,6 +49,7 @@
 #include "auth.h"
 
 #include "compat.h"
+#include "netlib.h"
 
 static volatile sig_atomic_t server_term;
 static void sig_term(int sig)

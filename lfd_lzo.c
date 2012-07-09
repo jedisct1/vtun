@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lfd_lzo.c,v 1.5.2.4 2012/07/07 07:14:17 mtbishop Exp $
+ * $Id: lfd_lzo.c,v 1.5.2.5 2012/07/09 01:01:08 mtbishop Exp $
  */ 
 
 /* LZO compression module */
@@ -104,7 +104,7 @@ int free_lzo()
  */  
 int comp_lzo(int len, char *in, char **out)
 { 
-     unsigned int zlen = 0;    
+     lzo_uint zlen = 0;    
      int err;
      
      if( (err=lzo1x_compress((void *)in,len,zbuf,&zlen,wmem)) != LZO_E_OK ){
@@ -118,7 +118,7 @@ int comp_lzo(int len, char *in, char **out)
 
 int decomp_lzo(int len, char *in, char **out)
 {
-     unsigned int zlen = 0;
+     lzo_uint zlen = 0;
      int err;
 
      if( (err=lzo1x_decompress((void *)in,len,zbuf,&zlen,wmem)) != LZO_E_OK ){

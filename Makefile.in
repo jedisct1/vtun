@@ -15,7 +15,7 @@
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
-#   $Id: Makefile.in,v 1.11.2.5 2012/07/07 05:12:17 mtbishop Exp $
+#   $Id: Makefile.in,v 1.11.2.6 2012/07/09 04:55:38 mtbishop Exp $
 #  
 CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@
@@ -34,6 +34,7 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 
 SBIN_DIR = @sbindir@
+BIN_DIR  = @bindir@
 MAN_DIR  = @mandir@
 ETC_DIR  = @sysconfdir@
 VAR_DIR  = @localstatedir@
@@ -98,5 +99,6 @@ install: vtund install_config install_man
 	$(INSTALL) -d -m 755 $(INSTALL_OWNER) $(DESTDIR)$(LOCK_DIR)
 	$(INSTALL) -d -m 755 $(INSTALL_OWNER) $(DESTDIR)$(SBIN_DIR)
 	$(INSTALL) -m 755 $(INSTALL_OWNER) vtund $(DESTDIR)$(SBIN_DIR)
+	$(BIN_DIR)/strip $(DESTDIR)$(SBIN_DIR)/vtund
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lfd_zlib.c,v 1.5.2.2 2008/01/07 22:35:38 mtbishop Exp $
+ * $Id: lfd_zlib.c,v 1.5.2.3 2013/07/07 19:54:52 mtbishop Exp $
  */ 
 
 /* ZLIB compression module */
@@ -45,7 +45,7 @@ static int zbuf_size = VTUN_FRAME_SIZE + 200;
  * Initialize compressor/decompressor.
  * Allocate the buffer.
  */  
-int zlib_alloc(struct vtun_host *host)
+static int zlib_alloc(struct vtun_host *host)
 {
      int zlevel = host->zlevel ? host->zlevel : 1;
 
@@ -78,7 +78,7 @@ int zlib_alloc(struct vtun_host *host)
  * Free the buffer.
  */  
 
-int zlib_free()
+static int zlib_free()
 {
      deflateEnd(&zd);
      inflateEnd(&zi);
@@ -104,7 +104,7 @@ static int expand_zbuf(z_stream *zs, int len)
  * That's why we expand buffer dynamically.
  * Practice shows that buffer will not grow larger that 16K.
  */  
-int zlib_comp(int len, char *in, char **out)
+static int zlib_comp(int len, char *in, char **out)
 { 
      int oavail, olen = 0;    
      int err;
@@ -133,7 +133,7 @@ int zlib_comp(int len, char *in, char **out)
      return olen;
 }
 
-int zlib_decomp(int len, char *in, char **out)
+static int zlib_decomp(int len, char *in, char **out)
 {
      int oavail = 0, olen = 0;     
      int err;
@@ -175,7 +175,7 @@ struct lfd_mod lfd_zlib = {
 
 #else  /* HAVE_ZLIB */
 
-int no_zlib(struct vtun_host *host)
+static int no_zlib(struct vtun_host *host)
 {
      vtun_syslog(LOG_INFO, "ZLIB compression is not supported");
      return -1;

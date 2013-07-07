@@ -2,12 +2,12 @@ dnl
 dnl VTun - Virtual Tunnel over TCP/IP network.
 dnl Copyright (C) 1998-2006  Maxim Krasnyansky <max_mk@yahoo.com>
 dnl
-dnl $Id: configure.in,v 1.19.2.2 2009/03/29 10:08:51 mtbishop Exp $
+dnl $Id: configure.in,v 1.19.2.3 2013/07/07 19:54:28 mtbishop Exp $
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-AC_INIT(lib.c)
+AC_INIT(vtun, 3) dnl this needs to change via variables as in the tail
 AC_CONFIG_HEADER(config.h)
 
 dnl Shapper support
@@ -110,10 +110,13 @@ dnl Check for librt
 AC_SEARCH_LIBS(nanosleep, rt posix4)
 
 dnl Check for setproctitle in libutil
-AC_SEARCH_LIBS(setproctitle, util bsd, AC_DEFINE(HAVE_SETPROC_TITLE) )
+AC_SEARCH_LIBS(setproctitle, util bsd, AC_DEFINE(HAVE_SETPROC_TITLE, [1], [Define to 1 if you have setproctitle() function]) )
+
+dnl Check for fork() (fallback to vfork() on non-MMU systems)
+AC_FUNC_FORK
 
 if test "$SHAPER" = "yes"; then
-   AC_DEFINE(HAVE_SHAPER)
+   AC_DEFINE(HAVE_SHAPER, [1], [Define to 1 if you want to enable shaper module])
 fi
 
 if test "$ZLIB" = "yes"; then
@@ -121,7 +124,7 @@ if test "$ZLIB" = "yes"; then
    AC_CHECKING( for ZLIB Library and Header files ... )
    AC_CHECK_LIB(z, deflate,
 	LIBS="$LIBS -lz"
-	AC_DEFINE(HAVE_ZLIB),
+	AC_DEFINE(HAVE_ZLIB, [1], [Define to 1 if you have zlib]),
 	AC_MSG_ERROR( Zlib library not found.)
    )
 fi
@@ -148,7 +151,7 @@ if test "$LZO" = "yes"; then
 	    AC_CHECK_LIB($I, lzo1x_decompress,
 	    [
 	          LIBS="$LIBS -l"$I
-	       AC_DEFINE(HAVE_LZO)
+	       AC_DEFINE(HAVE_LZO, [1], [Define to 1 if you have lzo])
 	          havelzo=1
 	      ]
 	    )
@@ -180,8 +183,8 @@ if test "$SSL" = "yes"; then
 	AC_CHECK_LIB(crypto, BF_set_key,
 	    [
 	       LIBS="$LIBS -lcrypto"
-	       AC_DEFINE(HAVE_SSL)
-	       AC_DEFINE(HAVE_SSL_BLOWFISH)
+	       AC_DEFINE(HAVE_SSL, [1], [Define to 1 if you have openssl])
+	       AC_DEFINE(HAVE_SSL_BLOWFISH, [1], [Define to 1 if you have blowfish in openssl])
 	    ],
 	    AC_MSG_ERROR( SSL library not found. )
 	),
@@ -196,7 +199,7 @@ if test "$SSL" = "yes"; then
     $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
 	AC_CHECK_LIB(crypto, AES_set_encrypt_key,
 	    [
-	       AC_DEFINE(HAVE_SSL_AES)
+	       AC_DEFINE(HAVE_SSL_AES, [1], [Define to 1 if you have AES in openssl])
 	    ],
 	    AC_MSG_ERROR( AES library not found. )
 	),
@@ -211,7 +214,7 @@ if test "$SSL" = "yes"; then
     $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
 	AC_CHECK_LIB(crypto, EVP_EncryptInit,
 	    [
-	       AC_DEFINE(HAVE_SSL_EVP)
+	       AC_DEFINE(HAVE_SSL_EVP, [1], [Define to 1 if you have EVP in openssl])
 	    ],
 	    AC_MSG_ERROR( EVP library not found. )
 	),
@@ -220,7 +223,7 @@ if test "$SSL" = "yes"; then
 fi
 
 if test "$NATHACK" = "yes"; then
-   AC_DEFINE(ENABLE_NAT_HACK)
+   AC_DEFINE(ENABLE_NAT_HACK, [1], [Define to 1 if you want to enable Nat Hack code])
 fi
 
 if test "$SOCKS" = "yes"; then
@@ -274,6 +277,6 @@ changequote(<,>)
 REL=`echo 'BRANCH-3_X' | tr -d '$: \-' | sed 's/^[A-Za-z]*//' | sed 's/\_/\./'`
 changequote([,])
 
-AC_DEFINE_UNQUOTED(VTUN_VER, "$REL `date '+%m/%d/%Y'`")
+AC_DEFINE_UNQUOTED(VTUN_VER, "$REL `date '+%m/%d/%Y'`", [Vtun version])
 
 AC_OUTPUT(Makefile)

@@ -1,3 +1,9 @@
+
+-.-.-
+	patch23 - check for fork and work around lack (AM)
+	patch22 - static declarations where possible (AM)
+	patch21 - fix up configure.in for newer autoheader (AM)
+
 3.0.3:
 	rfe2636157 - Delayed UDP connection (dv)
 	rfe2149137 - makefile ignores LDFLAGS (sbk)

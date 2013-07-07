@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lfd_lzo.c,v 1.5.2.5 2012/07/09 01:01:08 mtbishop Exp $
+ * $Id: lfd_lzo.c,v 1.5.2.6 2013/07/07 19:54:44 mtbishop Exp $
  */ 
 
 /* LZO compression module */
@@ -44,7 +44,7 @@ static lzo_voidp wmem;
 static int zbuf_size = VTUN_FRAME_SIZE * VTUN_FRAME_SIZE / 64 + 16 + 3;
 
 /* Pointer to compress function */
-int (*lzo1x_compress)(const lzo_byte *src, lzo_uint  src_len,
+static int (*lzo1x_compress)(const lzo_byte *src, lzo_uint  src_len,
 		   	    lzo_byte *dst, lzo_uint *dst_len,
 		   	    lzo_voidp wrkmem);
 /* 
@@ -52,7 +52,7 @@ int (*lzo1x_compress)(const lzo_byte *src, lzo_uint  src_len,
  * Allocate the buffers.
  */  
 
-int alloc_lzo(struct vtun_host *host)
+static int alloc_lzo(struct vtun_host *host)
 {
      int zlevel = host->zlevel ? host->zlevel : 1;
      lzo_uint mem;
@@ -91,7 +91,7 @@ int alloc_lzo(struct vtun_host *host)
  * Free the buffer.
  */  
 
-int free_lzo()
+static int free_lzo()
 {
      lfd_free(zbuf); zbuf = NULL;
      lzo_free(wmem); wmem = NULL;
@@ -102,7 +102,7 @@ int free_lzo()
  * This functions _MUST_ consume all incoming bytes in one pass,
  * that's why we expand buffer dynamicly.
  */  
-int comp_lzo(int len, char *in, char **out)
+static int comp_lzo(int len, char *in, char **out)
 { 
      lzo_uint zlen = 0;    
      int err;
@@ -116,7 +116,7 @@ int comp_lzo(int len, char *in, char **out)
      return zlen;
 }
 
-int decomp_lzo(int len, char *in, char **out)
+static int decomp_lzo(int len, char *in, char **out)
 {
      lzo_uint zlen = 0;
      int err;
@@ -144,7 +144,7 @@ struct lfd_mod lfd_lzo = {
 
 #else  /* HAVE_LZO */
 
-int no_lzo(struct vtun_host *host)
+static int no_lzo(struct vtun_host *host)
 {
      vtun_syslog(LOG_INFO, "LZO compression is not supported");
      return -1;

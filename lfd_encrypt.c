@@ -64,16 +64,16 @@
 #define ENC_BUF_SIZE VTUN_FRAME_SIZE + 128 
 #define ENC_KEY_SIZE 16
 
-BF_KEY key;
-char * enc_buf;
-char * dec_buf;
+static BF_KEY key;
+static char * enc_buf;
+static char * dec_buf;
 
 #define CIPHER_INIT		0
 #define CIPHER_CODE		1	
 #define CIPHER_SEQUENCE 	2
 #define CIPHER_REQ_INIT 	3
 
-struct vtun_host *phost;
+static struct vtun_host *phost;
 
 extern int send_a_packet;
 
@@ -81,27 +81,32 @@ extern int send_a_packet;
 #define MAX_GIBBERISH	10
 #define MIN_GIBBERISH   1
 #define MAX_GIBBERISH_TIME   2
-int gibberish;
-time_t gib_time_start;
+static int gibberish;
+static time_t gib_time_start;
 
-int cipher_enc_state;
-int cipher_dec_state;
-int cipher;
-int blocksize;
-int keysize;
-int enc_init_first_time;
-int dec_init_first_time;
-unsigned long sequence_num;
-char * pkey;
-char * iv_buf;
+static int cipher_enc_state;
+static int cipher_dec_state;
+static int cipher;
+static int blocksize;
+static int keysize;
+static int enc_init_first_time;
+static int dec_init_first_time;
+static unsigned long sequence_num;
+static char * pkey;
+static char * iv_buf;
 
-EVP_CIPHER_CTX ctx_enc;	/* encrypt */
-EVP_CIPHER_CTX ctx_dec;	/* decrypt */
+static EVP_CIPHER_CTX ctx_enc;	/* encrypt */
+static EVP_CIPHER_CTX ctx_dec;	/* decrypt */
 
-EVP_CIPHER_CTX ctx_enc_ecb;	/* sideband ecb encrypt */
-EVP_CIPHER_CTX ctx_dec_ecb;	/* sideband ecb decrypt */
+static EVP_CIPHER_CTX ctx_enc_ecb;	/* sideband ecb encrypt */
+static EVP_CIPHER_CTX ctx_dec_ecb;	/* sideband ecb decrypt */
 
-int prep_key(char **key, int size, struct vtun_host *host)
+static int send_msg(int len, char *in, char **out);
+static int recv_msg(int len, char *in, char **out);
+static int send_ib_mesg(int *len, char **in);
+static int recv_ib_mesg(int *len, char **in);
+
+static int prep_key(char **key, int size, struct vtun_host *host)
 {
    int tmplen, halflen;
    char *hashkey;
@@ -136,12 +141,12 @@ int prep_key(char **key, int size, struct vtun_host *host)
    return 0;
 }
 
-void free_key (char *key)
+static void free_key (char *key)
 {
    free(key);
 }
 
-int alloc_encrypt(struct vtun_host *host)
+static int alloc_encrypt(struct vtun_host *host)
 {
    int sb_init = 0;
    int var_key = 0;
@@ -282,7 +287,7 @@ int alloc_encrypt(struct vtun_host *host)
    return 0;
 }
 
-int free_encrypt()
+static int free_encrypt()
 {
    free_key(pkey); pkey = NULL;
 
@@ -297,7 +302,7 @@ int free_encrypt()
    return 0;
 }
 
-int encrypt_buf(int len, char *in, char **out)
+static int encrypt_buf(int len, char *in, char **out)
 { 
    register int pad, p, msg_len;
    int outlen;
@@ -326,7 +331,7 @@ int encrypt_buf(int len, char *in, char **out)
    return outlen+msg_len;
 }
 
-int decrypt_buf(int len, char *in, char **out)
+static int decrypt_buf(int len, char *in, char **out)
 {
    register int pad;
    char *tmp_ptr, *in_ptr, *out_ptr = dec_buf;
@@ -351,7 +356,7 @@ int decrypt_buf(int len, char *in, char **out)
    return outlen - pad;
 }
 
-int cipher_enc_init(char * iv)
+static int cipher_enc_init(char * iv)
 {
    int var_key = 0;
    const EVP_CIPHER *cipher_type;
@@ -442,7 +447,7 @@ int cipher_enc_init(char * iv)
    return 0;
 }
 
-int cipher_dec_init(char * iv)
+static int cipher_dec_init(char * iv)
 {
    int var_key = 0;
    const EVP_CIPHER *cipher_type;
@@ -532,7 +537,7 @@ int cipher_dec_init(char * iv)
    return 0;
 }
 
-int send_msg(int len, char *in, char **out)
+static int send_msg(int len, char *in, char **out)
 {
    char * iv; char * in_ptr;
    int outlen;
@@ -570,7 +575,7 @@ int send_msg(int len, char *in, char **out)
    return len;
 }
 
-int recv_msg(int len, char *in, char **out)
+static int recv_msg(int len, char *in, char **out)
 {
    char * iv; char * in_ptr;
    int outlen;
@@ -645,7 +650,7 @@ int recv_msg(int len, char *in, char **out)
 }
 
 /* Send In-Band Message */
-int send_ib_mesg(int *len, char **in)
+static int send_ib_mesg(int *len, char **in)
 {
    char *in_ptr = *in;
 
@@ -684,7 +689,7 @@ int send_ib_mesg(int *len, char **in)
 }
 
 /* Receive In-Band Message */
-int recv_ib_mesg(int *len, char **in)
+static int recv_ib_mesg(int *len, char **in)
 {
    char *in_ptr = *in;
 
@@ -747,7 +752,7 @@ struct lfd_mod lfd_encrypt = {
 
 #else  /* HAVE_SSL */
 
-int no_encrypt(struct vtun_host *host)
+static int no_encrypt(struct vtun_host *host)
 {
      vtun_syslog(LOG_INFO, "Encryption is not supported");
      return -1;

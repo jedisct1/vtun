@@ -159,3 +159,8 @@ Eugene Berdnikov
 
 Sean MacLennan
 	Reduce connection chatter 
+
+Andrey Mazo <ahippo@sf>
+	Clean up Configure.in for autoheader
+	Static declarations where sensible
+	Check/handle no fork() for no-MMU client systems (eg blackfin)

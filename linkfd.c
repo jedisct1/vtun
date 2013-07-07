@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: linkfd.c,v 1.13.2.5 2012/07/07 07:14:17 mtbishop Exp $
+ * $Id: linkfd.c,v 1.13.2.6 2013/07/07 19:55:06 mtbishop Exp $
  */
 
 #include "config.h"
@@ -56,14 +56,14 @@ int send_a_packet = 0;
 /* Host we are working with. 
  * Used by signal handlers that's why it is global. 
  */
-struct vtun_host *lfd_host;
+static struct vtun_host *lfd_host;
 
-struct lfd_mod *lfd_mod_head = NULL, *lfd_mod_tail = NULL;
+static struct lfd_mod *lfd_mod_head = NULL, *lfd_mod_tail = NULL;
 
 /* Modules functions*/
 
 /* Add module to the end of modules list */
-void lfd_add_mod(struct lfd_mod *mod)
+static void lfd_add_mod(struct lfd_mod *mod)
 {
      if( !lfd_mod_head ){
         lfd_mod_head = lfd_mod_tail = mod;
@@ -77,7 +77,7 @@ void lfd_add_mod(struct lfd_mod *mod)
 }
 
 /*  Initialize and allocate each module */
-int lfd_alloc_mod(struct vtun_host *host)
+static int lfd_alloc_mod(struct vtun_host *host)
 {
      struct lfd_mod *mod = lfd_mod_head;
 
@@ -91,7 +91,7 @@ int lfd_alloc_mod(struct vtun_host *host)
 }
 
 /* Free all modules */
-int lfd_free_mod(void)
+static int lfd_free_mod(void)
 {
      struct lfd_mod *mod = lfd_mod_head;
 
@@ -105,7 +105,7 @@ int lfd_free_mod(void)
 }
 
  /* Run modules down (from head to tail) */
-inline int lfd_run_down(int len, char *in, char **out)
+static inline int lfd_run_down(int len, char *in, char **out)
 {
      register struct lfd_mod *mod;
      
@@ -119,7 +119,7 @@ inline int lfd_run_down(int len, char *in, char **out)
 }
 
 /* Run modules up (from tail to head) */
-inline int lfd_run_up(int len, char *in, char **out)
+static inline int lfd_run_up(int len, char *in, char **out)
 {
      register struct lfd_mod *mod;
      
@@ -133,7 +133,7 @@ inline int lfd_run_up(int len, char *in, char **out)
 }
 
 /* Check if modules are accepting the data(down) */
-inline int lfd_check_down(void)
+static inline int lfd_check_down(void)
 {
      register struct lfd_mod *mod;
      int err = 1;
@@ -145,7 +145,7 @@ inline int lfd_check_down(void)
 }
 
 /* Check if modules are accepting the data(up) */
-inline int lfd_check_up(void)
+static inline int lfd_check_up(void)
 {
      register struct lfd_mod *mod;
      int err = 1;
@@ -179,7 +179,7 @@ static void sig_hup(int sig)
 static volatile sig_atomic_t ka_need_verify = 0;
 static time_t stat_timer = 0, ka_timer = 0; 
 
-void sig_alarm(int sig)
+static void sig_alarm(int sig)
 {
      static time_t tm_old, tm = 0;
      static char stm[20];
@@ -215,7 +215,7 @@ static void sig_usr1(int sig)
      lfd_host->stat.comp_in = lfd_host->stat.comp_out = 0; 
 }
 
-int lfd_linker(void)
+static int lfd_linker(void)
 {
      int fd1 = lfd_host->rmt_fd;
      int fd2 = lfd_host->loc_fd; 

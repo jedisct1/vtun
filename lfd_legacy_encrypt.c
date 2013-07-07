@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lfd_legacy_encrypt.c,v 1.1.4.2 2008/01/07 22:35:33 mtbishop Exp $
+ * $Id: lfd_legacy_encrypt.c,v 1.1.4.3 2013/07/07 19:54:41 mtbishop Exp $
  * Code added wholesale temporarily from lfd_encrypt 1.2.2.8
  */ 
 
@@ -61,10 +61,10 @@
 #define ENC_BUF_SIZE VTUN_FRAME_SIZE + 16 
 #define ENC_KEY_SIZE 16
 
-BF_KEY key;
-char * enc_buf;
+static BF_KEY key;
+static char * enc_buf;
 
-int alloc_legacy_encrypt(struct vtun_host *host)
+static int alloc_legacy_encrypt(struct vtun_host *host)
 {
    if( !(enc_buf = lfd_alloc(ENC_BUF_SIZE)) ){
       vtun_syslog(LOG_ERR,"Can't allocate buffer for legacy encryptor");
@@ -77,13 +77,13 @@ int alloc_legacy_encrypt(struct vtun_host *host)
    return 0;
 }
 
-int free_legacy_encrypt()
+static int free_legacy_encrypt()
 {
    lfd_free(enc_buf); enc_buf = NULL;
    return 0;
 }
 
-int legacy_encrypt_buf(int len, char *in, char **out)
+static int legacy_encrypt_buf(int len, char *in, char **out)
 { 
    register int pad, p;
    register char *in_ptr = in, *out_ptr = enc_buf;
@@ -105,7 +105,7 @@ int legacy_encrypt_buf(int len, char *in, char **out)
    return len + 8;
 }
 
-int legacy_decrypt_buf(int len, char *in, char **out)
+static int legacy_decrypt_buf(int len, char *in, char **out)
 {
    register int p;
 
@@ -140,7 +140,7 @@ struct lfd_mod lfd_legacy_encrypt = {
 
 #else  /* HAVE_SSL */
 
-int no_legacy_encrypt(struct vtun_host *host)
+static int no_legacy_encrypt(struct vtun_host *host)
 {
      vtun_syslog(LOG_INFO, "Encryption is not supported");
      return -1;

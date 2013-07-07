@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: tunnel.c,v 1.14.2.2 2008/01/07 22:36:03 mtbishop Exp $
+ * $Id: tunnel.c,v 1.14.2.3 2013/07/07 19:55:17 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -147,6 +147,7 @@ int tunnel(struct vtun_host *host)
 	   break;
      }
 
+#ifdef HAVE_WORKING_FORK
         switch( (pid=fork()) ){
 	   case -1:
 	      vtun_syslog(LOG_ERR,"Couldn't fork()");
@@ -187,6 +188,9 @@ int tunnel(struct vtun_host *host)
 
 	   exit(0);           
 	}
+#else
+     vtun_syslog(LOG_ERR,"Couldn't run up commands: fork() not available");
+#endif
 
      switch( host->flags & VTUN_TYPE_MASK ){
         case VTUN_TTY:
@@ -222,8 +226,12 @@ int tunnel(struct vtun_host *host)
 
      opt = linkfd(host);
 
+#ifdef HAVE_WORKING_FORK
      set_title("%s running down commands", host->host);
      llist_trav(&host->down, run_cmd, &host->sopt);
+#else
+     vtun_syslog(LOG_ERR,"Couldn't run down commands: fork() not available");
+#endif
 
      if(! ( host->persist == VTUN_PERSIST_KEEPIF ) ) {
         set_title("%s closing", host->host);

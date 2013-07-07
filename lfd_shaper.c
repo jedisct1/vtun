@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lfd_shaper.c,v 1.7.2.2 2008/01/07 22:35:36 mtbishop Exp $
+ * $Id: lfd_shaper.c,v 1.7.2.3 2013/07/07 19:54:48 mtbishop Exp $
  */
 
 #include "config.h"
@@ -38,13 +38,13 @@
 
 #ifdef HAVE_SHAPER 
 
-unsigned long bytes, max_speed;
-struct timeval curr_time, last_time;
+static unsigned long bytes, max_speed;
+static struct timeval curr_time, last_time;
 
 /* 
  * Initialization function.
  */
-int shaper_init(struct vtun_host *host)
+static int shaper_init(struct vtun_host *host)
 {
      /* Calculate max speed bytes/sec */
      max_speed = host->spd_out / 8 * 1024;
@@ -59,7 +59,7 @@ int shaper_init(struct vtun_host *host)
 }
 
 /* Shaper counter */
-int shaper_counter(int len, char *in, char **out)
+static int shaper_counter(int len, char *in, char **out)
 { 
      /* Just count incoming bytes */
      bytes += len;
@@ -69,7 +69,7 @@ int shaper_counter(int len, char *in, char **out)
 }
 
 /* Convert tv struct to milisec */
-unsigned long inline tv2ms(struct timeval tv)
+static unsigned long inline tv2ms(struct timeval tv)
 {
      register unsigned long ms = (tv.tv_sec * 1000)+(tv.tv_usec / 1000); 
      return  ms ? ms : 1;
@@ -94,7 +94,7 @@ unsigned long inline tv2ms(struct timeval tv)
  * higher than maximal speed stop accepting input 
  * until the speed become lower or equal to maximal.
  */
-int shaper_avail(void)
+static int shaper_avail(void)
 { 
      static struct timeval tv;
      register unsigned long speed;
@@ -144,7 +144,7 @@ struct lfd_mod lfd_shaper = {
 
 #else  /* HAVE_SHAPER */
 
-int no_shaper(struct vtun_host *host)
+static int no_shaper(struct vtun_host *host)
 {
      vtun_syslog(LOG_INFO, "Traffic shaping is not supported");
      return -1;

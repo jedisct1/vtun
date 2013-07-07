@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lib.h,v 1.7.2.2 2008/01/07 22:35:41 mtbishop Exp $
+ * $Id: lib.h,v 1.7.2.3 2013/07/07 19:55:00 mtbishop Exp $
  */ 
 #ifndef _VTUN_LIB_H
 #define _VTUN_LIB_H
@@ -46,7 +46,9 @@
 int readn_t(int fd, void *buf, size_t count, time_t timeout);
 int print_p(int f, const char *ftm, ...);
 
+#ifdef HAVE_WORKING_FORK
 int  run_cmd(void *d, void *opt);
+#endif
 void free_sopt(struct vtun_sopt *opt);
 
 /* IO cancelation */

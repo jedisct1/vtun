@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: server.c,v 1.9.2.3 2012/07/09 01:01:08 mtbishop Exp $
+ * $Id: server.c,v 1.9.2.4 2013/07/07 19:55:14 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -58,7 +58,7 @@ static void sig_term(int sig)
      server_term = VTUN_SIG_TERM;
 }
 
-void connection(int sock)
+static void connection(int sock)
 {
      struct sockaddr_in my_addr, cl_addr;
      struct vtun_host *host;
@@ -111,7 +111,8 @@ void connection(int sock)
      exit(0);
 }
 
-void listener(void)
+#ifdef HAVE_WORKING_FORK
+static void listener(void)
 {
      struct sigaction sa;
      struct sockaddr_in my_addr, cl_addr;
@@ -172,6 +173,7 @@ void listener(void)
 	}
      }  
 }	
+#endif
 
 void server(int sock)
 {
@@ -190,7 +192,11 @@ void server(int sock)
 
      switch( vtun.svr_type ){
 	case VTUN_STAND_ALONE:
+#ifdef HAVE_WORKING_FORK
 	   listener();
+#else
+	   vtun_syslog(LOG_ERR,"Standalone server is not supported: fork() not available");
+#endif
 	   break;
         case VTUN_INETD:
 	   connection(sock);

@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: auth.c,v 1.9.2.4 2009/04/24 09:15:33 mtbishop Exp $
+ * $Id: auth.c,v 1.9.2.5 2013/07/07 19:54:20 mtbishop Exp $
  */ 
 
 /*
@@ -62,12 +62,12 @@
 #include <openssl/blowfish.h>
 #include <openssl/rand.h>
 
-void gen_chal(char *buf)
+static void gen_chal(char *buf)
 {
    RAND_bytes(buf, VTUN_CHAL_SIZE);
 }
 
-void encrypt_chal(char *chal, char *pwd)
+static void encrypt_chal(char *chal, char *pwd)
 { 
    register int i;
    BF_KEY key;
@@ -78,7 +78,7 @@ void encrypt_chal(char *chal, char *pwd)
       BF_ecb_encrypt(chal + i,  chal + i, &key, BF_ENCRYPT);
 }
 
-void decrypt_chal(char *chal, char *pwd)
+static void decrypt_chal(char *chal, char *pwd)
 { 
    register int i;
    BF_KEY key;
@@ -91,7 +91,7 @@ void decrypt_chal(char *chal, char *pwd)
 
 #else /* HAVE_SSL */
 
-void encrypt_chal(char *chal, char *pwd)
+static void encrypt_chal(char *chal, char *pwd)
 { 
    char * xor_msk = pwd;
    register int i, xor_len = strlen(xor_msk);
@@ -100,13 +100,13 @@ void encrypt_chal(char *chal, char *pwd)
       chal[i] ^= xor_msk[i%xor_len];
 }
 
-void inline decrypt_chal(char *chal, char *pwd)
+static void inline decrypt_chal(char *chal, char *pwd)
 { 
    encrypt_chal(chal, pwd);
 }
 
 /* Generate PSEUDO random challenge key. */
-void gen_chal(char *buf)
+static void gen_chal(char *buf)
 {
    register int i;
  
@@ -123,7 +123,7 @@ void gen_chal(char *buf)
  * C - compression, S - speed for shaper and so on.
  */ 
 
-char *bf2cf(struct vtun_host *host)
+static char *bf2cf(struct vtun_host *host)
 {
      static char str[20], *ptr = str;
 
@@ -187,7 +187,7 @@ char *bf2cf(struct vtun_host *host)
    FLAGS: <TuE1>
 */
 
-int cf2bf(char *str, struct vtun_host *host)
+static int cf2bf(char *str, struct vtun_host *host)
 {
      char *ptr, *p;
      int s;
@@ -277,7 +277,7 @@ int cf2bf(char *str, struct vtun_host *host)
  * string format:  <char_data> 
  */ 
 
-char *cl2cs(char *chal)
+static char *cl2cs(char *chal)
 {
      static char str[VTUN_CHAL_SIZE*2+3], *chr="abcdefghijklmnop";
      register char *ptr = str;
@@ -295,7 +295,7 @@ char *cl2cs(char *chal)
      return str;
 }
 
-int cs2cl(char *str, char *chal)
+static int cs2cl(char *str, char *chal)
 {
      register char *ptr = str;
      register int i;

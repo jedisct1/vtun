@@ -1,5 +1,5 @@
 .\" Manual page for vtund.conf
-.\" $Id: vtund.conf.5,v 1.4.2.4 2012/07/07 07:14:17 mtbishop Exp $
+.\" $Id: vtund.conf.5,v 1.4.2.5 2013/07/07 20:36:52 mtbishop Exp $
 .TH VTUND.CONF 5
 
 .SH NAME
@@ -315,6 +315,8 @@ Special characters that can be used inside \fIarguments\fR parameter:
 \fB%a\fR - Remote IP address
 .br
 \fB%p\fR - Remote TCP or UDP port
+.br
+\fB%h\fR - Host profile name
 .IP \fBppp\ \fIarguments\fR
 run program specified by \fBppp\fR statement in \fBoptions\fR section.
 All special character described above are valid in \fIarguments\fR here.

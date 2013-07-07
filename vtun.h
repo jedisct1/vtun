@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: vtun.h,v 1.12.2.7 2012/07/09 01:01:08 mtbishop Exp $
+ * $Id: vtun.h,v 1.12.2.8 2013/07/07 20:36:56 mtbishop Exp $
  */ 
 
 #ifndef _VTUN_H
@@ -51,6 +51,7 @@ struct vtun_sopt {
     int  lport;
     char *raddr;
     int  rport;
+    char *host;
 };
 
 struct vtun_stat {

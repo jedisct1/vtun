@@ -15,7 +15,7 @@
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #
-#   $Id: Makefile.in,v 1.11.2.6 2012/07/09 04:55:38 mtbishop Exp $
+#   $Id: Makefile.in,v 1.11.2.7 2013/07/07 20:36:44 mtbishop Exp $
 #  
 CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@
@@ -73,7 +73,7 @@ depend:
 	makedepend -- $(CFLAGS) -- *.c
 
 clean:
-	rm -f core cfg_file.tab.* cfg_file.lex.* *.o *~ *.bak vtund
+	rm -f core cfg_file.tab.* cfg_file.lex.* *.o *~ .#* *.bak vtund
 
 distclean: clean
 	rm -f $(CONFIGURE_FILES)

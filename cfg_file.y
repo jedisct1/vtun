@@ -18,7 +18,7 @@
  */
 
 /*
- * $Id: cfg_file.y,v 1.8.2.6 2012/07/09 01:01:08 mtbishop Exp $
+ * $Id: cfg_file.y,v 1.8.2.7 2013/07/07 20:36:33 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -107,6 +107,7 @@ statement: '\n'
 	  	  memcpy(parse_host, &default_host, sizeof(struct vtun_host));
 		  parse_host->host = strdup($1);
 		  parse_host->passwd = NULL;
+		  parse_host->sopt.host = strdup($1);
 
 		  /* Copy local address */
 		  copy_addr(parse_host, &default_host);

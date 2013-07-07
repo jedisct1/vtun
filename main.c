@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: main.c,v 1.9.2.6 2013/07/07 19:55:10 mtbishop Exp $
+ * $Id: main.c,v 1.9.2.7 2013/07/07 20:31:22 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -280,5 +280,5 @@ static void usage(void)
      printf("  Client:\n");
      /* I don't think these work. I'm disabling the suggestion - bish 20050601*/
      printf("\tvtund [-f file] " /* [-P port] [-L local address] */
-	    "[-p] [-m] [-t timeout] <host profile> <server address>\n");
+	    "[-q] [-p] [-m] [-t timeout] <host profile> <server address>\n");
 }

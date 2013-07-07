@@ -17,7 +17,7 @@
  */
 
 /*
- * $Id: lib.c,v 1.9.2.3 2013/07/07 19:54:56 mtbishop Exp $
+ * $Id: lib.c,v 1.9.2.4 2013/07/07 20:21:20 mtbishop Exp $
  */ 
 
 #include "config.h"
@@ -360,6 +360,7 @@ void vtun_syslog (int priority, char *format, ...)
       va_start(ap, format);
       vsnprintf(buf, sizeof(buf)-1, format, ap);
       syslog(priority, "%s", buf);
+      closelog();
       va_end(ap);
 
       in_syslog = 0;

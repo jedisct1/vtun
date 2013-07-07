@@ -164,3 +164,6 @@ Andrey Mazo <ahippo@sf>
 	Clean up Configure.in for autoheader
 	Static declarations where sensible
 	Check/handle no fork() for no-MMU client systems (eg blackfin)
+
+Alfred Heisner <aheisner@sf>
+	Race condition between syslog socket and vtun (bug53)

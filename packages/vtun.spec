@@ -1,4 +1,4 @@
-# $Id: vtun.spec,v 1.24.2.9 2012/07/08 10:30:27 mtbishop Exp $
+# $Id: vtun.spec,v 1.24.2.10 2013/07/07 18:03:49 mtbishop Exp $
 
 # By default, builds without socks-support.
 # To build with socks-support, issue:
@@ -46,6 +46,8 @@ Summary: 	Virtual tunnel over TCP/IP networks.
 Summary(pl):	Wirtualne tunele poprzez sieci TCP/IP
 Vendor: 	Maxim Krasnyansky <max_mk@yahoo.com>
 Packager: 	Bishop Clark (LC957) <bishop@platypus.bc.ca>
+
+		# Remember this is ignored for recent distros (Backward Compatibility is dumb)
 BuildRoot: 	%{?_tmppath:%{_tmppath}}%{!?_tmppath:%{tmpdir}}/%{name}-%{version}-root-%(id -u -n)
 Obsoletes: 	vppp
 BuildRequires:  autoconf

@@ -49,14 +49,9 @@
 
 #ifdef HAVE_SSL
 
-#ifndef __APPLE_CC__
 /* OpenSSL includes */
 #include <openssl/md5.h>
 #include <openssl/blowfish.h>
-#else /* YAY - We're MAC OS */
-#include <sys/md5.h>
-#include <crypto/blowfish.h>
-#endif  /* __APPLE_CC__ */
 
 #define ENC_BUF_SIZE VTUN_FRAME_SIZE + 16 
 #define ENC_KEY_SIZE 16

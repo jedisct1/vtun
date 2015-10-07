@@ -610,7 +610,7 @@ int clear_nat_hack_client(void *d, void *u)
 }
 
 /* Clear the VTUN_NAT_HACK flag which are not relevant to the current operation mode */
-inline void clear_nat_hack_flags(int svr)
+void clear_nat_hack_flags(int svr)
 {
 	if (svr)
 		llist_trav(&host_list,clear_nat_hack_server,NULL);

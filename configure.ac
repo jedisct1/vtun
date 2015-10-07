@@ -246,6 +246,9 @@ fi
 
 AC_MSG_RESULT()
 
+CFLAGS="$CFLAGS -fstack-protector-all -fno-strict-overflow -fno-strict-aliasing"
+CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
+
 AC_CHECK_FUNCS([getpt grantpt unlockpt ptsname])
 
 OS_REL=`uname -r | tr -d '[A-Za-z\-\_\.]'`

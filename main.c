@@ -35,6 +35,10 @@
 #include <netinet/in.h>
 #endif
 
+#ifdef HAVE_SODIUM
+#include <sodium.h>
+#endif
+
 #include "vtun.h"
 #include "lib.h"
 #include "compat.h"
@@ -193,6 +197,12 @@ int main(int argc, char *argv[], char *env[])
 #endif
 	   break;
      }
+    
+#ifdef HAVE_SODIUM
+    if (sodium_init() != 0) {
+	abort();
+    }
+#endif
 
      if( daemon ){
 #ifdef HAVE_WORKING_FORK

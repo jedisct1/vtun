@@ -17,10 +17,10 @@ AC_ARG_ENABLE(shaper,
    SHAPER=yes
 )
 dnl Encryption support
-AC_ARG_ENABLE(ssl,
-   --disable-ssl     	   Don not compile encryption module,
-   SSL=$enableval,
-   SSL=yes
+AC_ARG_ENABLE(sodium,
+   --disable-sodium    	   Don not compile encryption module,
+   SODIUM=$enableval,
+   SODIUM=yes
 )
 dnl ZLIB support
 AC_ARG_ENABLE(zlib,
@@ -48,13 +48,13 @@ AC_ARG_ENABLE(nathack,
    NATHACK=yes
 )
 
-AC_ARG_WITH(ssl-headers,
-   --with-ssl-headers=DIR  Crypto Include files location,
-   SSL_HDR_DIR="$withval"
+AC_ARG_WITH(sodium-headers,
+   --with-sodium-headers=DIR  Crypto Include files location,
+   SODIUM_HDR_DIR="$withval"
    CPPFLAGS="$CPPFLAGS -I$withval" 
 )
-AC_ARG_WITH(ssl-lib,
-   --with-ssl-lib=DIR      Crypto Library location,
+AC_ARG_WITH(sodium-lib,
+   --with-sodium-lib=DIR      Crypto Library location,
    LIBS="$LIBS -L$withval" 
 )
 
@@ -165,60 +165,16 @@ if test "$LZO" = "yes"; then
    fi
 fi
 
-if test "$SSL" = "yes"; then
+if test "$SODIUM" = "yes"; then
    AC_MSG_RESULT()
-   AC_CHECKING( for md5 Library and Header files ... )
-AC_SEARCH_HEADERS(md5.h,
-    $SSL_HDR_DIR /usr/include/openssl "" /usr/include /usr/include/ssl /usr/local/include /usr/local/ssl/include /usr/include/sys, 
+   AC_CHECKING( for Sodium Library and Header files ... )
+   AC_SEARCH_LIBS(crypto_aead_aes256gcm_aesni_encrypt, [sodium],
+                  [AC_DEFINE(HAVE_SODIUM, [1], [Define to 1 if you have Sodium])],
+                  AC_ERROR([libsodium with crypto_aead_aes256gcm_aesni_encrypt not found]))
+   AC_SEARCH_HEADERS(sodium.h,
+    $SSL_HDR_DIR /usr/include /usr/local/include /opt/include, 
     ,
-    AC_MSG_ERROR( SSL headers not found. )
-   )
-fi
-
-if test "$SSL" = "yes"; then
-   AC_MSG_RESULT()
-   AC_CHECKING( for blowfish Library and Header files ... )
-   AC_SEARCH_HEADERS(blowfish.h,
-    $BLOWFISH_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
-	AC_CHECK_LIB(crypto, BF_set_key,
-	    [
-	       LIBS="$LIBS -lcrypto"
-	       AC_DEFINE(HAVE_SSL, [1], [Define to 1 if you have openssl])
-	       AC_DEFINE(HAVE_SSL_BLOWFISH, [1], [Define to 1 if you have blowfish in openssl])
-	    ],
-	    AC_MSG_ERROR( SSL library not found. )
-	),
-	AC_MSG_ERROR( SSL headers not found. )
-   )
-fi
-
-if test "$SSL" = "yes"; then
-   AC_MSG_RESULT()
-   AC_CHECKING( for AES Library and Header files ... )
-   AC_SEARCH_HEADERS(aes.h,
-    $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
-	AC_CHECK_LIB(crypto, AES_set_encrypt_key,
-	    [
-	       AC_DEFINE(HAVE_SSL_AES, [1], [Define to 1 if you have AES in openssl])
-	    ],
-	    AC_MSG_ERROR( AES library not found. )
-	),
-	AC_MSG_ERROR( AES headers not found. )
-   )
-fi
-
-if test "$SSL" = "yes"; then
-   AC_MSG_RESULT()
-   AC_CHECKING( for EVP Library and Header files ... )
-   AC_SEARCH_HEADERS(evp.h,
-    $SSL_HDR_DIR /usr/include/ssl /usr/include/openssl /usr/include /usr/local/include /usr/local/ssl/include  /usr/include/crypto,
-	AC_CHECK_LIB(crypto, EVP_EncryptInit,
-	    [
-	       AC_DEFINE(HAVE_SSL_EVP, [1], [Define to 1 if you have EVP in openssl])
-	    ],
-	    AC_MSG_ERROR( EVP library not found. )
-	),
-	AC_MSG_ERROR( EVP headers not found. )
+    AC_MSG_ERROR( Sodium headers not found. )
    )
 fi
 

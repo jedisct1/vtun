@@ -27,6 +27,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -56,66 +57,44 @@
 #include "auth.h"
 
 /* Encryption and Decryption of the challenge key */
-#ifdef HAVE_SSL
+#include <sodium.h>
 
-#include <openssl/md5.h>
-#include <openssl/blowfish.h>
-#include <openssl/rand.h>
-
-static void gen_chal(char *buf)
+static int derive_key(struct vtun_host *host)
 {
-   RAND_bytes(buf, VTUN_CHAL_SIZE);
+   unsigned char salt[crypto_pwhash_scryptsalsa208sha256_SALTBYTES];
+   int           ret = -1;
+
+   if (host->key != NULL) {
+      return 0;
+   }
+   if ((host->key = sodium_malloc(HOST_KEYBYTES)) == NULL) {
+      return -1;
+   }
+   memset(salt, 0xd1, sizeof salt);
+   if (crypto_pwhash_scryptsalsa208sha256
+       (host->key, HOST_KEYBYTES, host->passwd, strlen(host->passwd), salt,
+	crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+	crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) == 0) {
+      ret = 0;
+   }
+   sodium_memzero(host->passwd, strlen(host->passwd));
+   free(host->passwd);
+   host->passwd = NULL;
+   vtun_syslog(LOG_DEBUG,"Key ready for host %s.", host->host);
+
+   return ret;
 }
 
-static void encrypt_chal(char *chal, char *pwd)
-{ 
-   register int i;
-   BF_KEY key;
-
-   BF_set_key(&key, 16, MD5(pwd,strlen(pwd),NULL));
-
-   for(i=0; i < VTUN_CHAL_SIZE; i += 8 )
-      BF_ecb_encrypt(chal + i,  chal + i, &key, BF_ENCRYPT);
-}
-
-static void decrypt_chal(char *chal, char *pwd)
-{ 
-   register int i;
-   BF_KEY key;
-
-   BF_set_key(&key, 16, MD5(pwd,strlen(pwd),NULL));
-
-   for(i=0; i < VTUN_CHAL_SIZE; i += 8 )
-      BF_ecb_encrypt(chal + i,  chal + i, &key, BF_DECRYPT);
-}
-
-#else /* HAVE_SSL */
-
-static void encrypt_chal(char *chal, char *pwd)
-{ 
-   char * xor_msk = pwd;
-   register int i, xor_len = strlen(xor_msk);
-
-   for(i=0; i < VTUN_CHAL_SIZE; i++)
-      chal[i] ^= xor_msk[i%xor_len];
-}
-
-static void inline decrypt_chal(char *chal, char *pwd)
-{ 
-   encrypt_chal(chal, pwd);
-}
-
-/* Generate PSEUDO random challenge key. */
-static void gen_chal(char *buf)
+static void gen_chal(char *chal)
 {
-   register int i;
- 
-   srand(time(NULL));
-
-   for(i=0; i < VTUN_CHAL_SIZE; i++)
-      buf[i] = (unsigned int)(255.0 * rand()/RAND_MAX);
+   randombytes_buf((unsigned char *) chal, VTUN_CHAL_SIZE);
 }
-#endif /* HAVE_SSL */
+
+static void auth_chal(char *chal, const struct vtun_host *host)
+{
+   crypto_generichash(chal, VTUN_CHAL_SIZE, chal, VTUN_CHAL_SIZE,
+		      host->key, HOST_KEYBYTES);
+}
 
 /* 
  * Functions to convert binary flags to character string.
@@ -348,10 +327,10 @@ struct vtun_host * auth_server(int fd)
 		   
 		   if( !(h = find_host(host)) )
 		      break;
-
-		   decrypt_chal(chal_res, h->passwd);   		
+		   derive_key(h);
+		   auth_chal(chal_req, h);
 	
-		   if( !memcmp(chal_req, chal_res, VTUN_CHAL_SIZE) ){
+		   if( !sodium_memcmp(chal_req, chal_res, VTUN_CHAL_SIZE) ){
 		      /* Auth successeful. */
 
 		      /* Lock host */	
@@ -400,8 +379,8 @@ int auth_client(int fd, struct vtun_host *host)
 	        case ST_HOST:
 		   if( !strncmp(buf,"OK",2) && cs2cl(buf,chal)){
 		      stage = ST_CHAL;
-					
-		      encrypt_chal(chal,host->passwd);
+		      derive_key(host);
+		      auth_chal(chal, host);
 		      print_p(fd,"CHAL: %s\n", cl2cs(chal));
 
 		      continue;

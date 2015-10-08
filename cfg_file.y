@@ -107,6 +107,7 @@ statement: '\n'
 	  	  memcpy(parse_host, &default_host, sizeof(struct vtun_host));
 		  parse_host->host = strdup($1);
 		  parse_host->passwd = NULL;
+		  parse_host->key = NULL;
 		  parse_host->sopt.host = strdup($1);
 
 		  /* Copy local address */

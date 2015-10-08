@@ -82,9 +82,12 @@ struct vtun_addr {
 #define VTUN_ADDR_IFACE	0x01 
 #define VTUN_ADDR_NAME  0x02
 
+#define HOST_KEYBYTES 32
+
 struct vtun_host {
    char *host;
    char *passwd;
+   unsigned char *key;
    char *dev;
 
    llist up;
@@ -138,19 +141,7 @@ extern llist host_list;
 #define VTUN_ENCRYPT    0x0008
 
 /* Cipher options */
-#define VTUN_ENC_BF128CBC	2
-#define VTUN_ENC_BF128CFB	3
-#define VTUN_ENC_BF128OFB	4
-#define VTUN_ENC_BF256CBC	6
-#define VTUN_ENC_BF256CFB	7
-#define VTUN_ENC_BF256OFB	8
-
-#define VTUN_ENC_AES128CBC	10
-#define VTUN_ENC_AES128CFB	11
-#define VTUN_ENC_AES128OFB	12
-#define VTUN_ENC_AES256CBC	14
-#define VTUN_ENC_AES256CFB	15
-#define VTUN_ENC_AES256OFB	16
+#define VTUN_ENC_AES256GCM      17
 
 /* Mask to drop the flags which will be supplied by the server */
 #define VTUN_CLNT_MASK  0xf000

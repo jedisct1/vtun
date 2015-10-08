@@ -175,25 +175,6 @@ static int alloc_encrypt(struct vtun_host *host)
    cipher = host->cipher;
    switch(cipher)
    {
-      case VTUN_ENC_AES256OFB:
-      case VTUN_ENC_AES256CFB:
-      case VTUN_ENC_AES256CBC:
-         blocksize = 16;
-         keysize = 32;
-         sb_init = 1;
-         cipher_type = EVP_aes_256_ecb();
-         pctx_enc = &ctx_enc_ecb;
-         pctx_dec = &ctx_dec_ecb;
-      break;
-      
-      case VTUN_ENC_AES256ECB:
-         blocksize = 16;
-         keysize = 32;
-         pctx_enc = &ctx_enc;
-         pctx_dec = &ctx_dec;
-         cipher_type = EVP_aes_256_ecb();
-         strcpy(cipher_name,"AES-256-ECB");
-      break;      
       case VTUN_ENC_AES128OFB:
       case VTUN_ENC_AES128CFB:
       case VTUN_ENC_AES128CBC:
@@ -203,14 +184,6 @@ static int alloc_encrypt(struct vtun_host *host)
          cipher_type = EVP_aes_128_ecb();
          pctx_enc = &ctx_enc_ecb;
          pctx_dec = &ctx_dec_ecb;
-      break;
-      case VTUN_ENC_AES128ECB:
-         blocksize = 16;
-         keysize = 16;
-         pctx_enc = &ctx_enc;
-         pctx_dec = &ctx_dec;
-         cipher_type = EVP_aes_128_ecb();
-         strcpy(cipher_name,"AES-128-ECB");
       break;
 
       case VTUN_ENC_BF256OFB:
@@ -225,16 +198,6 @@ static int alloc_encrypt(struct vtun_host *host)
          pctx_dec = &ctx_dec_ecb;
       break;
 
-      case VTUN_ENC_BF256ECB:
-         blocksize = 8;
-         keysize = 32;
-         var_key = 1;
-         pctx_enc = &ctx_enc;
-         pctx_dec = &ctx_dec;
-         cipher_type = EVP_bf_ecb();
-         strcpy(cipher_name,"Blowfish-256-ECB");
-      break;
-
       case VTUN_ENC_BF128OFB:
       case VTUN_ENC_BF128CFB:
       case VTUN_ENC_BF128CBC:
@@ -245,18 +208,19 @@ static int alloc_encrypt(struct vtun_host *host)
          cipher_type = EVP_bf_ecb();
          pctx_enc = &ctx_enc_ecb;
          pctx_dec = &ctx_dec_ecb;
-      break;
-      case VTUN_ENC_BF128ECB: /* blowfish 128 ecb is the default */
+         break;
+      case VTUN_ENC_AES256OFB:
+      case VTUN_ENC_AES256CFB:
+      case VTUN_ENC_AES256CBC:
       default:
-         blocksize = 8;
-         keysize = 16;
-         var_key = 1;
-         pctx_enc = &ctx_enc;
-         pctx_dec = &ctx_dec;
-         cipher_type = EVP_bf_ecb();
-         strcpy(cipher_name,"Blowfish-128-ECB");
-      break;
-   } /* switch(host->cipher) */
+         blocksize = 16;
+         keysize = 32;
+         sb_init = 1;
+         cipher_type = EVP_aes_256_ecb();
+         pctx_enc = &ctx_enc_ecb;
+         pctx_dec = &ctx_dec_ecb;
+         strcpy(cipher_name,"AES-256-CBC");
+    } /* switch(host->cipher) */
 
    if (prep_key(&pkey, keysize, host) != 0) return -1;
    EVP_CIPHER_CTX_init(pctx_enc);

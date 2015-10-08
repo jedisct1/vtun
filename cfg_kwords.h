@@ -86,7 +86,6 @@ struct kword cfg_param[] = {
    { "inetd",	 VTUN_INETD },
    { "stand",	 VTUN_STAND_ALONE },
    { "keep",     VTUN_PERSIST_KEEPIF },
-   { "oldblowfish128ecb", VTUN_LEGACY_ENCRYPT },
    { "blowfish128ecb", VTUN_ENC_BF128ECB },
    { "blowfish128cbc", VTUN_ENC_BF128CBC },
    { "blowfish128cfb", VTUN_ENC_BF128CFB },

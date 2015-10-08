@@ -156,8 +156,6 @@ extern llist host_list;
 #define VTUN_ENC_AES256CFB	15
 #define VTUN_ENC_AES256OFB	16
 
-#define VTUN_LEGACY_ENCRYPT	999
-
 /* Mask to drop the flags which will be supplied by the server */
 #define VTUN_CLNT_MASK  0xf000
 

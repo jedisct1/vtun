@@ -42,6 +42,8 @@ derive_key(unsigned char *key, size_t key_size, struct vtun_host *host)
    crypto_generichash(key, key_size, host->key, HOST_KEYBYTES, NULL, 0U);
    sodium_free(host->key);
    host->key = NULL;
+
+   return 0;
 }
 
 static int
@@ -136,7 +138,7 @@ encrypt_buf(int message_len_, char *message_, char ** const ciphertext_p)
     memcpy(ctx.ciphertext + message_len + crypto_aead_ABYTES,
 	   ctx.nonce, crypto_aead_NPUBBYTES);
     sodium_increment(ctx.nonce, crypto_aead_NPUBBYTES);    
-    *ciphertext_p = ctx.ciphertext;    
+    *ciphertext_p = (char *) ctx.ciphertext;
 
     return (int) ciphertext_len + crypto_aead_NPUBBYTES;
 }
@@ -162,7 +164,7 @@ decrypt_buf(int ciphertext_len_, char *ciphertext_, char ** const message_p)
 	return -1;
     }
     memcpy(ctx.previous_decrypted_nonce, nonce, crypto_aead_NPUBBYTES);
-    *message_p = ctx.message;
+    *message_p = (char *) ctx.message;
 
     return (int) message_len;
 }

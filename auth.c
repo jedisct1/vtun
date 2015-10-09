@@ -1,9 +1,9 @@
-/*  
+/*
     VTun - Virtual Tunnel over TCP/IP network.
 
     Copyright (C) 1998-2008  Maxim Krasnyansky <max_mk@yahoo.com>
 
-    VTun has been derived from VPPP package by Maxim Krasnyansky. 
+    VTun has been derived from VPPP package by Maxim Krasnyansky.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,12 +18,12 @@
 
 /*
  * $Id: auth.c,v 1.9.2.5 2013/07/07 19:54:20 mtbishop Exp $
- */ 
+ */
 
 /*
- * Challenge based authentication. 
+ * Challenge based authentication.
  * Thanx to Chris Todd<christ@insynq.com> for the good idea.
- */ 
+ */
 
 #include "config.h"
 
@@ -63,6 +63,8 @@ static int derive_key(struct vtun_host *host)
 {
    unsigned char salt[crypto_pwhash_scryptsalsa208sha256_SALTBYTES];
    int           ret = -1;
+   size_t  bin_len;
+   const char ** const hex_end;
 
    if (host->key != NULL) {
       return 0;
@@ -70,17 +72,27 @@ static int derive_key(struct vtun_host *host)
    if ((host->key = sodium_malloc(HOST_KEYBYTES)) == NULL) {
       return -1;
    }
+
+   sodium_hex2bin(host->key, HOST_KEYBYTES,host->passwd,
+                              strlen(host->passwd), "", &bin_len, hex_end);
+   if (bin_len == HOST_KEYBYTES) {
+     vtun_syslog(LOG_ERR,"supplied password is long enough to be the secret");
+     return 0;
+   }
+
+   vtun_syslog(LOG_ERR,"supplied password is %i bits, adjusting it to 32 bits", bin_len);
    memset(salt, 0xd1, sizeof salt);
    if (crypto_pwhash_scryptsalsa208sha256
-       (host->key, HOST_KEYBYTES, host->passwd, strlen(host->passwd), salt,
-	crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
-	crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) == 0) {
-      ret = 0;
-   }
-   sodium_memzero(host->passwd, strlen(host->passwd));
-   free(host->passwd);
-   host->passwd = NULL;
-   vtun_syslog(LOG_DEBUG,"Key ready for host %s.", host->host);
+      (host->key, HOST_KEYBYTES, host->passwd, strlen(host->passwd), salt,
+       crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+       crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) == 0) {
+         ret = 0;
+    }
+
+  sodium_memzero(host->passwd, strlen(host->passwd));
+  free(host->passwd);
+  host->passwd = NULL;
+  vtun_syslog(LOG_DEBUG,"Key ready for host %s.", host->host);
 
    return ret;
 }
@@ -96,11 +108,11 @@ static void auth_chal(char *chal, const struct vtun_host *host)
 		      host->key, HOST_KEYBYTES);
 }
 
-/* 
+/*
  * Functions to convert binary flags to character string.
- * string format:  <CS64> 
+ * string format:  <CS64>
  * C - compression, S - speed for shaper and so on.
- */ 
+ */
 
 static char *bf2cf(struct vtun_host *host)
 {
@@ -120,12 +132,12 @@ static char *bf2cf(struct vtun_host *host)
 
      switch( host->flags & VTUN_TYPE_MASK ){
 	case VTUN_TTY:
-	   *(ptr++) = 't'; 	
+	   *(ptr++) = 't';
 	   break;
 
 	case VTUN_PIPE:
 	   *(ptr++) = 'p';
-	   break; 	
+	   break;
 
 	case VTUN_ETHER:
 	   *(ptr++) = 'e';
@@ -134,7 +146,7 @@ static char *bf2cf(struct vtun_host *host)
 	case VTUN_TUN:
 	   *(ptr++) = 'u';
 	   break;
-     } 
+     }
 
      if( (host->flags & VTUN_SHAPE) /* && host->spd_in */)
 	ptr += sprintf(ptr,"S%d",host->spd_in);
@@ -157,7 +169,7 @@ static char *bf2cf(struct vtun_host *host)
      return str;
 }
 
-/* return 1 on success, otherwise 0 
+/* return 1 on success, otherwise 0
    Example:
    FLAGS: <TuE1>
 */
@@ -167,10 +179,10 @@ static int cf2bf(char *str, struct vtun_host *host)
      char *ptr, *p;
      int s;
 
-     if( (ptr = strchr(str,'<')) ){ 
+     if( (ptr = strchr(str,'<')) ){
 	vtun_syslog(LOG_DEBUG,"Remote Server sends %s.", ptr);
 	ptr++;
-	while(*ptr){  
+	while(*ptr){
 	   switch(*ptr++){
 	     case 't':
 		host->flags |= VTUN_TTY;
@@ -196,17 +208,17 @@ static int cf2bf(char *str, struct vtun_host *host)
 		host->flags |= VTUN_KEEP_ALIVE;
 		break;
 	     case 'C':
-		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p) 
+		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p)
 		   return 0;
 		host->flags |= VTUN_ZLIB;
-		host->zlevel = s; 
+		host->zlevel = s;
 		ptr = p;
 		break;
 	     case 'L':
-		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p) 
+		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p)
 		   return 0;
 		host->flags |= VTUN_LZO;
-		host->zlevel = s; 
+		host->zlevel = s;
 		ptr = p;
 		break;
 	     case 'E':
@@ -221,11 +233,11 @@ static int cf2bf(char *str, struct vtun_host *host)
 		ptr = p;
 		break;
      	     case 'S':
-		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p) 
+		if((s = strtol(ptr,&p,10)) == ERANGE || ptr == p)
 		   return 0;
 		if( s ){
 	    	   host->flags |= VTUN_SHAPE;
-		   host->spd_out = s; 
+		   host->spd_out = s;
 		}
 		ptr = p;
 		break;
@@ -242,10 +254,10 @@ static int cf2bf(char *str, struct vtun_host *host)
      return 0;
 }
 
-/* 
+/*
  * Functions to convert binary key data to character string.
- * string format:  <char_data> 
- */ 
+ * string format:  <char_data>
+ */
 
 static char *cl2cs(char *chal)
 {
@@ -255,9 +267,9 @@ static char *cl2cs(char *chal)
 
      *(ptr++) = '<';
      for(i=0; i<VTUN_CHAL_SIZE; i++){
-	*(ptr++) = chr[ ((chal[i] & 0xf0) >> 4) ];  
+	*(ptr++) = chr[ ((chal[i] & 0xf0) >> 4) ];
 	*(ptr++) = chr[ (chal[i] & 0x0f) ];
-     }  
+     }
 
      *(ptr++) = '>';
      *ptr = '\0';
@@ -270,24 +282,24 @@ static int cs2cl(char *str, char *chal)
      register char *ptr = str;
      register int i;
 
-     if( !(ptr = strchr(str,'<')) ) 
+     if( !(ptr = strchr(str,'<')) )
         return 0;
      ptr++;
      if( !strtok(ptr,">") || strlen(ptr) != VTUN_CHAL_SIZE*2 )
         return 0;
 
      for(i=0; i<VTUN_CHAL_SIZE && *ptr; i++, ptr+=2) {
-	chal[i]  = (*ptr - 'a') << 4;  
+	chal[i]  = (*ptr - 'a') << 4;
 	chal[i] |= *(ptr+1) - 'a';
      }
 
      return 1;
-}   
+}
 
 /* Authentication (Server side) */
 struct vtun_host * auth_server(int fd)
 {
-        char chal_req[VTUN_CHAL_SIZE], chal_res[VTUN_CHAL_SIZE];	
+        char chal_req[VTUN_CHAL_SIZE], chal_res[VTUN_CHAL_SIZE];
 	char buf[VTUN_MESG_SIZE], *str1, *str2;
         struct vtun_host *h = NULL;
 	char *host = NULL;
@@ -323,23 +335,23 @@ struct vtun_host * auth_server(int fd)
 	     case ST_CHAL:
 	        if( !strcmp(str1,"CHAL") ){
 		   if( !cs2cl(str2,chal_res) )
-		      break; 
-		   
+		      break;
+
 		   if( !(h = find_host(host)) )
 		      break;
 		   derive_key(h);
 		   auth_chal(chal_req, h);
-	
+
 		   if( !sodium_memcmp(chal_req, chal_res, VTUN_CHAL_SIZE) ){
 		      /* Auth successeful. */
 
-		      /* Lock host */	
+		      /* Lock host */
 		      if( lock_host(h) < 0 ){
 		         /* Multiple connections are denied */
 		         h = NULL;
 		         break;
-		      }	
-		      print_p(fd,"OK FLAGS: %s\n", bf2cf(h)); 
+		      }
+		      print_p(fd,"OK FLAGS: %s\n", bf2cf(h));
  		   } else
 		      h = NULL;
 	        }
@@ -352,7 +364,7 @@ struct vtun_host * auth_server(int fd)
 	   free(host);
 
 	if( !h )
-	   print_p(fd,"ERR\n");	
+	   print_p(fd,"ERR\n");
 
 	return h;
 }
@@ -362,7 +374,7 @@ int auth_client(int fd, struct vtun_host *host)
 {
 	char buf[VTUN_MESG_SIZE], chal[VTUN_CHAL_SIZE];
 	int stage, success=0 ;
-	
+
 	stage = ST_INIT;
 
 	while( readn_t(fd, buf, VTUN_MESG_SIZE, vtun.timeout) > 0 ){
@@ -374,7 +386,7 @@ int auth_client(int fd, struct vtun_host *host)
 		      print_p(fd,"HOST: %s\n",host->host);
 		      continue;
 	           }
-		   break;	
+		   break;
 
 	        case ST_HOST:
 		   if( !strncmp(buf,"OK",2) && cs2cl(buf,chal)){
@@ -385,8 +397,8 @@ int auth_client(int fd, struct vtun_host *host)
 
 		      continue;
 	   	   }
-		   break;	
-	
+		   break;
+
 	        case ST_CHAL:
 		   if( !strncmp(buf,"OK",2) && cf2bf(buf,host) )
 		      success = 1;

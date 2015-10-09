@@ -1,9 +1,9 @@
-/*  
+/*
     VTun - Virtual Tunnel over TCP/IP network.
 
     Copyright (C) 1998-2008  Maxim Krasnyansky <max_mk@yahoo.com>
 
-    VTun has been derived from VPPP package by Maxim Krasnyansky. 
+    VTun has been derived from VPPP package by Maxim Krasnyansky.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 /*
  * $Id: server.c,v 1.9.2.4 2013/07/07 19:55:14 mtbishop Exp $
- */ 
+ */
 
 #include "config.h"
 
@@ -74,22 +74,22 @@ static void connection(int sock)
      opt = sizeof(struct sockaddr_in);
      if( getsockname(sock, (struct sockaddr *) &my_addr, &opt) < 0 ){
         vtun_syslog(LOG_ERR, "Can't get local socket address");
-        exit(1); 
+        exit(1);
      }
 
      ip = strdup(inet_ntoa(cl_addr.sin_addr));
 
      io_init();
 
-     if( (host=auth_server(sock)) ){	
+     if( (host=auth_server(sock)) ){
         sa.sa_handler=SIG_IGN;
 	sa.sa_flags=SA_NOCLDWAIT;;
         sigaction(SIGHUP,&sa,NULL);
 
-	vtun_syslog(LOG_INFO,"Session %s[%s:%d] opened", host->host, ip, 
+	vtun_syslog(LOG_INFO,"Session %s[%s:%d] opened", host->host, ip,
 					ntohs(cl_addr.sin_port) );
-        host->rmt_fd = sock; 
-	
+        host->rmt_fd = sock;
+
         host->sopt.laddr = strdup(inet_ntoa(my_addr.sin_addr));
         host->sopt.lport = vtun.bind_addr.port;
         host->sopt.raddr = strdup(ip);
@@ -100,7 +100,7 @@ static void connection(int sock)
 
 	vtun_syslog(LOG_INFO,"Session %s closed", host->host);
 
-	/* Unlock host. (locked in auth_server) */	
+	/* Unlock host. (locked in auth_server) */
 	unlock_host(host);
      } else {
         vtun_syslog(LOG_INFO,"Denied connection from %s:%d", ip,
@@ -127,18 +127,17 @@ static void listener(void)
         vtun_syslog(LOG_ERR, "Can't fill in listen socket");
         exit(1);
      }
-
      if( (s=socket(AF_INET,SOCK_STREAM,0))== -1 ){
 	vtun_syslog(LOG_ERR,"Can't create socket");
 	exit(1);
      }
 
      opt=1;
-     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
+     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
      if( bind(s,(struct sockaddr *)&my_addr,sizeof(my_addr)) ){
-	vtun_syslog(LOG_ERR,"Can't bind to the socket");
-	exit(1);
+	      vtun_syslog(LOG_ERR,"Can't bind to the socket %s", inet_ntoa(my_addr.sin_addr));
+	      exit(1);
      }
 
      if( listen(s, 10) ){
@@ -158,7 +157,7 @@ static void listener(void)
      while( (!server_term) || (server_term == VTUN_SIG_HUP) ){
         opt=sizeof(cl_addr);
 	if( (s1=accept(s,(struct sockaddr *)&cl_addr,&opt)) < 0 )
-	   continue; 
+	   continue;
 
 	switch( fork() ){
 	   case 0:
@@ -171,8 +170,8 @@ static void listener(void)
 	      close(s1);
 	      break;
 	}
-     }  
-}	
+     }
+}
 #endif
 
 void server(int sock)
@@ -201,5 +200,5 @@ void server(int sock)
         case VTUN_INETD:
 	   connection(sock);
 	   break;
-     }    
+     }
 }

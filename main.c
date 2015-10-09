@@ -1,9 +1,9 @@
-/*  
+/*
     VTun - Virtual Tunnel over TCP/IP network.
 
     Copyright (C) 1998-2008  Maxim Krasnyansky <max_mk@yahoo.com>
 
-    VTun has been derived from VPPP package by Maxim Krasnyansky. 
+    VTun has been derived from VPPP package by Maxim Krasnyansky.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 /*
  * $Id: main.c,v 1.9.2.7 2013/07/07 20:31:22 mtbishop Exp $
- */ 
+ */
 
 #include "config.h"
 
@@ -62,7 +62,7 @@ extern int optind,opterr,optopt;
 extern char *optarg;
 
 /* for the NATHack bit.  Is our UDP session connected? */
-int is_rmt_fd_connected=1; 
+int is_rmt_fd_connected=1;
 
 int main(int argc, char *argv[], char *env[])
 {
@@ -83,13 +83,13 @@ int main(int argc, char *argv[], char *env[])
      vtun.cfg_file = VTUN_CONFIG_FILE;
      vtun.persist = -1;
      vtun.timeout = -1;
-	
+
      /* Dup strings because parser will try to free them */
      vtun.ppp   = strdup("/usr/sbin/pppd");
      vtun.ifcfg = strdup("/sbin/ifconfig");
      vtun.route = strdup("/sbin/route");
-     vtun.fwall = strdup("/sbin/ipchains");	
-     vtun.iproute = strdup("/sbin/ip");	
+     vtun.fwall = strdup("/sbin/ipchains");
+     vtun.iproute = strdup("/sbin/ip");
 
      vtun.svr_name = NULL;
      vtun.svr_addr = NULL;
@@ -140,7 +140,7 @@ int main(int argc, char *argv[], char *env[])
 		vtun.persist = 1;
 		break;
 	    case 't':
-	        vtun.timeout = atoi(optarg);	
+	        vtun.timeout = atoi(optarg);
 	        break;
 	    case 'q':
 		vtun.quiet = 1;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[], char *env[])
 		usage();
 	        exit(1);
 	}
-     }	
+     }
      reread_config(0);
 
      if (vtun.syslog != LOG_DAEMON) {
@@ -167,18 +167,18 @@ int main(int argc, char *argv[], char *env[])
 	}
 	hst = argv[optind++];
 
-        if( !(host = find_host(hst)) ){	
+        if( !(host = find_host(hst)) ){
 	   vtun_syslog(LOG_ERR,"Host %s not found in %s", hst, vtun.cfg_file);
 	   exit(1);
         }
 
 	vtun.svr_name = strdup(argv[optind]);
-     } 
-      	
-     /* 
+     }
+
+     /*
       * Now fill uninitialized fields of the options structure
-      * with default values. 
-      */ 
+      * with default values.
+      */
      if(vtun.bind_addr.port == -1)
 	vtun.bind_addr.port = VTUN_PORT;
      if(vtun.persist == -1)
@@ -193,11 +193,11 @@ int main(int argc, char *argv[], char *env[])
 	case VTUN_INETD:
 	   sock = dup(0);
 #if defined(HAVE_WORKING_FORK) || defined(HAVE_WORKING_VFORK)
-	   dofork = 0; 
+	   dofork = 0;
 #endif
 	   break;
      }
-    
+
 #ifdef HAVE_SODIUM
     if (sodium_init() != 0) {
 	abort();
@@ -226,7 +226,7 @@ int main(int argc, char *argv[], char *env[])
      }
 
      if(svr){
-        memset(&sa,0,sizeof(sa));     
+        memset(&sa,0,sizeof(sa));
         sa.sa_handler=reread_config;
         sigaction(SIGHUP,&sa,NULL);
 
@@ -240,28 +240,28 @@ int main(int argc, char *argv[], char *env[])
 	   exit(1);
 #endif
 	}
-	
+
 	server(sock);
-     } else {	
+     } else {
         init_title(argc,argv,env,"vtund[c]: ");
         client(host);
      }
 
      closelog();
-	
+
      return 0;
 }
 
-/* 
+/*
  * Very simple PID file creation function. Used by server.
- * Overrides existing file. 
+ * Overrides existing file.
  */
 static void write_pid(void)
 {
      FILE *f;
 
      if( !(f=fopen(VTUN_PID_FILE,"w")) ){
-        vtun_syslog(LOG_ERR,"Can't write PID file");
+        vtun_syslog(LOG_ERR,"Can't write PID file %s", VTUN_PID_FILE);
         return;
      }
 

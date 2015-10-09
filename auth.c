@@ -103,8 +103,9 @@ static void gen_chal(char *chal)
 
 static void auth_chal(char *chal, const struct vtun_host *host)
 {
-   crypto_generichash(chal, VTUN_CHAL_SIZE, chal, VTUN_CHAL_SIZE,
-		      host->key, HOST_KEYBYTES);
+   crypto_generichash((unsigned char *) chal, VTUN_CHAL_SIZE,
+                      (const unsigned char *) chal,
+                      VTUN_CHAL_SIZE, host->key, HOST_KEYBYTES);
 }
 
 /*

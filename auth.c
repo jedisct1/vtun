@@ -64,7 +64,6 @@ static int derive_key(struct vtun_host *host)
    unsigned char salt[crypto_pwhash_scryptsalsa208sha256_SALTBYTES];
    int           ret = -1;
    size_t  bin_len;
-   const char ** const hex_end;
 
    if (host->key != NULL) {
       return 0;
@@ -74,7 +73,7 @@ static int derive_key(struct vtun_host *host)
    }
 
    sodium_hex2bin(host->key, HOST_KEYBYTES,host->passwd,
-                              strlen(host->passwd), "", &bin_len, hex_end);
+                              strlen(host->passwd), "", &bin_len, NULL);
    if (bin_len == HOST_KEYBYTES) {
      vtun_syslog(LOG_ERR,"supplied password is long enough to be the secret");
      return 0;

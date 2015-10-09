@@ -28,7 +28,6 @@
 typedef struct CryptoCtx {
     crypto_aead_aes256gcm_aesni_state *state;
     unsigned char *ciphertext;
-    unsigned char *key;
     unsigned char *message;
     unsigned char *nonce;
     unsigned char *previous_decrypted_nonce;
@@ -70,16 +69,18 @@ init_nonce(unsigned char *nonce, size_t nonce_size)
 static int
 alloc_encrypt(struct vtun_host *host)
 {
+    unsigned char *key;
+
     if (sodium_init() < 0) {
 	return -1;
     }
+    key = sodium_malloc(crypto_aead_KEYBYTES);
     ctx.state = sodium_malloc(sizeof *ctx.state);
-    ctx.key = sodium_malloc(crypto_aead_KEYBYTES);
     ctx.message = sodium_malloc(MESSAGE_MAX_SIZE);
     ctx.ciphertext = sodium_malloc(CIPHERTEXT_MAX_TOTAL_SIZE);
     ctx.nonce = sodium_malloc(crypto_aead_NPUBBYTES);
     ctx.previous_decrypted_nonce = sodium_malloc(crypto_aead_NPUBBYTES);
-    if (ctx.state == NULL || ctx.key == NULL || ctx.message == NULL ||
+    if (key == NULL || ctx.state == NULL || ctx.message == NULL ||
 	ctx.ciphertext == NULL || ctx.ciphertext == NULL || ctx.nonce == NULL ||
 	ctx.previous_decrypted_nonce == NULL) {
 	abort();
@@ -87,19 +88,18 @@ alloc_encrypt(struct vtun_host *host)
     if (init_nonce(ctx.nonce, crypto_aead_NPUBBYTES) != 0) {
 	return -1;
     }
-    if (derive_key(ctx.key, crypto_aead_KEYBYTES, host) != 0) {
+    if (derive_key(key, crypto_aead_KEYBYTES, host) != 0) {
 	return -1;
     }
-    crypto_aead_aes256gcm_aesni_beforenm(ctx.state, ctx.key);
-    sodium_free(ctx.key);
-    ctx.key = NULL;
+    crypto_aead_aes256gcm_aesni_beforenm(ctx.state, key);
+    sodium_free(key);
+
     return 0;
 }
 
 static int
 free_encrypt(void)
 {
-    sodium_free(ctx.key);
     sodium_free(ctx.message);
     sodium_free(ctx.ciphertext);
     sodium_free(ctx.nonce);

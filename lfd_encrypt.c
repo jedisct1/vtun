@@ -49,19 +49,19 @@ static int
 init_nonce(unsigned char *nonce, size_t nonce_size)
 {
     time_t now;
-    
+
     if (nonce_size < 5) {
-	return -1;
+        return -1;
     }
     time(&now);
     if (now < MINIMUM_DATE) {
-	sleep(SLEEP_WHEN_CLOCK_IS_OFF);
-	randombytes_buf(nonce, nonce_size);
+        sleep(SLEEP_WHEN_CLOCK_IS_OFF);
+        randombytes_buf(nonce, nonce_size);
     } else {
-	randombytes_buf(nonce + 4, nonce_size - 4);
-	now <<= 2;
-	memcpy(nonce, &now, 3);
-	nonce[3] = (nonce[3] & 0x3) ^ *(((unsigned char *) &now) + 3);
+        randombytes_buf(nonce + 4, nonce_size - 4);
+        now <<= 2;
+        memcpy(nonce, &now, 3);
+        nonce[3] = (nonce[3] & 0x3) ^ *(((unsigned char *) &now) + 3);
     }
     return 0;
 }
@@ -72,7 +72,7 @@ alloc_encrypt(struct vtun_host *host)
     unsigned char *key;
 
     if (sodium_init() < 0) {
-	return -1;
+        return -1;
     }
     key = sodium_malloc(crypto_aead_KEYBYTES);
     ctx.state = sodium_malloc(sizeof *ctx.state);
@@ -81,15 +81,15 @@ alloc_encrypt(struct vtun_host *host)
     ctx.nonce = sodium_malloc(crypto_aead_NPUBBYTES);
     ctx.previous_decrypted_nonce = sodium_malloc(crypto_aead_NPUBBYTES);
     if (key == NULL || ctx.state == NULL || ctx.message == NULL ||
-	ctx.ciphertext == NULL || ctx.ciphertext == NULL || ctx.nonce == NULL ||
-	ctx.previous_decrypted_nonce == NULL) {
-	abort();
+        ctx.ciphertext == NULL || ctx.ciphertext == NULL || ctx.nonce == NULL ||
+        ctx.previous_decrypted_nonce == NULL) {
+        abort();
     }
     if (init_nonce(ctx.nonce, crypto_aead_NPUBBYTES) != 0) {
-	return -1;
+        return -1;
     }
     if (derive_key(key, crypto_aead_KEYBYTES, host) != 0) {
-	return -1;
+        return -1;
     }
     crypto_aead_aes256gcm_aesni_beforenm(ctx.state, key);
     sodium_free(key);
@@ -112,32 +112,32 @@ static int
 is_lower_or_equal(const unsigned char *a, const unsigned char *b, size_t size)
 {
     size_t i;
-    
+
     for (i = 0U; i < size; i++) {
-	if (a[i] > b[i]) {
-	    return 0;
-	}
+        if (a[i] > b[i]) {
+            return 0;
+        }
     }
     return 1;
 }
 
 static int
 encrypt_buf(int message_len_, char *message_, char ** const ciphertext_p)
-{    
+{
     const unsigned char *message = (const unsigned char *) message_;
     const size_t         message_len = (size_t) message_len_;
     unsigned long long   ciphertext_len;
-    
+
     if (message_len_ < 0 || message_len > MESSAGE_MAX_SIZE) {
-	return -1;
+        return -1;
     }
     crypto_aead_aes256gcm_aesni_encrypt_afternm(ctx.ciphertext, &ciphertext_len,
-						message, message_len,
-						NULL, 0ULL,
-						NULL, ctx.nonce, ctx.state);
+                                                message, message_len,
+                                                NULL, 0ULL,
+                                                NULL, ctx.nonce, ctx.state);
     memcpy(ctx.ciphertext + message_len + crypto_aead_ABYTES,
-	   ctx.nonce, crypto_aead_NPUBBYTES);
-    sodium_increment(ctx.nonce, crypto_aead_NPUBBYTES);    
+           ctx.nonce, crypto_aead_NPUBBYTES);
+    sodium_increment(ctx.nonce, crypto_aead_NPUBBYTES);
     *ciphertext_p = (char *) ctx.ciphertext;
 
     return (int) ciphertext_len + crypto_aead_NPUBBYTES;
@@ -145,23 +145,23 @@ encrypt_buf(int message_len_, char *message_, char ** const ciphertext_p)
 
 static int
 decrypt_buf(int ciphertext_len_, char *ciphertext_, char ** const message_p)
-{    
+{
     const unsigned char *ciphertext = (const unsigned char *) ciphertext_;
     const unsigned char *nonce;
     size_t               ciphertext_len = (size_t) ciphertext_len_;
     unsigned long long   message_len;
-    
+
     if (ciphertext_len_ < CIPHERTEXT_ABYTES ||
-	ciphertext_len > CIPHERTEXT_MAX_SIZE) {
-	return -1;
+        ciphertext_len > CIPHERTEXT_MAX_SIZE) {
+        return -1;
     }
-    ciphertext_len -= crypto_aead_NPUBBYTES;    
+    ciphertext_len -= crypto_aead_NPUBBYTES;
     nonce = ciphertext + ciphertext_len;
     if (is_lower_or_equal(nonce, ctx.previous_decrypted_nonce, crypto_aead_NPUBBYTES) ||
-	crypto_aead_aes256gcm_aesni_decrypt_afternm(ctx.message, &message_len, NULL,
-						    ciphertext, ciphertext_len,
-						    NULL, 0ULL, nonce, ctx.state) != 0) {
-	return -1;
+        crypto_aead_aes256gcm_aesni_decrypt_afternm(ctx.message, &message_len, NULL,
+                                                    ciphertext, ciphertext_len,
+                                                    NULL, 0ULL, nonce, ctx.state) != 0) {
+        return -1;
     }
     memcpy(ctx.previous_decrypted_nonce, nonce, crypto_aead_NPUBBYTES);
     *message_p = (char *) ctx.message;

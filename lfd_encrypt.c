@@ -26,7 +26,7 @@
 #define SLEEP_WHEN_CLOCK_IS_OFF 10
 
 typedef struct CryptoCtx {
-    crypto_aead_aes256gcm_aesni_state *state;
+    crypto_aead_aes256gcm_state *state;
     unsigned char *ciphertext;
     unsigned char *message;
     unsigned char *nonce;

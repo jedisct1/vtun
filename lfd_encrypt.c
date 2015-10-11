@@ -91,7 +91,7 @@ alloc_encrypt(struct vtun_host *host)
     if (derive_key(key, crypto_aead_KEYBYTES, host) != 0) {
         return -1;
     }
-    crypto_aead_aes256gcm_aesni_beforenm(ctx.state, key);
+    crypto_aead_aes256gcm_beforenm(ctx.state, key);
     sodium_free(key);
 
     return 0;
@@ -131,10 +131,10 @@ encrypt_buf(int message_len_, char *message_, char ** const ciphertext_p)
     if (message_len_ < 0 || message_len > MESSAGE_MAX_SIZE) {
         return -1;
     }
-    crypto_aead_aes256gcm_aesni_encrypt_afternm(ctx.ciphertext, &ciphertext_len,
-                                                message, message_len,
-                                                NULL, 0ULL,
-                                                NULL, ctx.nonce, ctx.state);
+    crypto_aead_aes256gcm_encrypt_afternm(ctx.ciphertext, &ciphertext_len,
+                                          message, message_len,
+                                          NULL, 0ULL,
+                                          NULL, ctx.nonce, ctx.state);
     memcpy(ctx.ciphertext + message_len + crypto_aead_ABYTES,
            ctx.nonce, crypto_aead_NPUBBYTES);
     sodium_increment(ctx.nonce, crypto_aead_NPUBBYTES);
@@ -158,9 +158,9 @@ decrypt_buf(int ciphertext_len_, char *ciphertext_, char ** const message_p)
     ciphertext_len -= crypto_aead_NPUBBYTES;
     nonce = ciphertext + ciphertext_len;
     if (is_lower_or_equal(nonce, ctx.previous_decrypted_nonce, crypto_aead_NPUBBYTES) ||
-        crypto_aead_aes256gcm_aesni_decrypt_afternm(ctx.message, &message_len, NULL,
-                                                    ciphertext, ciphertext_len,
-                                                    NULL, 0ULL, nonce, ctx.state) != 0) {
+        crypto_aead_aes256gcm_decrypt_afternm(ctx.message, &message_len, NULL,
+                                              ciphertext, ciphertext_len,
+                                              NULL, 0ULL, nonce, ctx.state) != 0) {
         return -1;
     }
     memcpy(ctx.previous_decrypted_nonce, nonce, crypto_aead_NPUBBYTES);

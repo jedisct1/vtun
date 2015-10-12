@@ -352,14 +352,21 @@ void vtun_syslog (int priority, char *format, ...)
 {
    static volatile sig_atomic_t in_syslog= 0;
    char buf[255];
+   time_t now;
+   struct tm tm;
    va_list ap;
 
    if(! in_syslog) {
       in_syslog = 1;
-    
+      now = time(NULL);
+      localtime_r(&now, &tm);
+
       va_start(ap, format);
       vsnprintf(buf, sizeof(buf)-1, format, ap);
-      syslog(priority, "%s", buf);
+      syslog(priority, "%d-%02d-%02d %02d:%02d:%02d %s",
+             tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+             tm.tm_hour, tm.tm_min, tm.tm_sec,
+             buf);
       closelog();
       va_end(ap);
 

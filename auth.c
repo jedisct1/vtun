@@ -72,26 +72,25 @@ static int derive_key(struct vtun_host *host)
       return -1;
    }
 
-   sodium_hex2bin(host->key, HOST_KEYBYTES,host->passwd,
+   sodium_hex2bin(host->key, HOST_KEYBYTES, host->passwd,
                               strlen(host->passwd), "", &bin_len, NULL);
    if (bin_len == HOST_KEYBYTES) {
      vtun_syslog(LOG_ERR,"supplied password is long enough to be the secret");
      return 0;
    }
 
-   vtun_syslog(LOG_ERR,"supplied password is %i bits, adjusting it to 32 bits", bin_len);
    memset(salt, 0xd1, sizeof salt);
    if (crypto_pwhash_scryptsalsa208sha256
       (host->key, HOST_KEYBYTES, host->passwd, strlen(host->passwd), salt,
        crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
        crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE) == 0) {
          ret = 0;
-    }
+   }
 
-  sodium_memzero(host->passwd, strlen(host->passwd));
-  free(host->passwd);
-  host->passwd = NULL;
-  vtun_syslog(LOG_DEBUG,"Key ready for host %s.", host->host);
+   sodium_memzero(host->passwd, strlen(host->passwd));
+   free(host->passwd);
+   host->passwd = NULL;
+   vtun_syslog(LOG_DEBUG,"Key ready for host %s.", host->host);
 
    return ret;
 }

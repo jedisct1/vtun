@@ -43,6 +43,8 @@
 #include <arpa/inet.h>
 #endif
 
+#include <sodium.h>
+
 #include "vtun.h"
 #include "lib.h"
 #include "lock.h"
@@ -66,6 +68,7 @@ static void connection(int sock)
      char *ip;
      int opt;
 
+     randombytes_stir();
      opt = sizeof(struct sockaddr_in);
      if( getpeername(sock, (struct sockaddr *) &cl_addr, &opt) ){
         vtun_syslog(LOG_ERR, "Can't get peer name");

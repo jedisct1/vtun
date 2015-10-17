@@ -20,11 +20,9 @@
  * $Id: auth.h,v 1.3.2.2 2008/01/07 22:35:19 mtbishop Exp $
  */ 
 
-#define VTUN_CHAL_SIZE	 16
-
 #define ST_INIT  0
-#define ST_HOST  1
-#define ST_CHAL  2
+#define ST_STEP2 1
+#define ST_STEP3 2
 
 struct vtun_host * auth_server(int fd);
 int auth_client(int fd, struct vtun_host *host);

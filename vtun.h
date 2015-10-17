@@ -87,7 +87,8 @@ struct vtun_addr {
 struct vtun_host {
    char *host;
    char *passwd;
-   unsigned char *key;
+   unsigned char *akey;
+   unsigned char *key;   
    char *dev;
 
    llist up;
@@ -171,7 +172,7 @@ extern llist host_list;
 #define VTUN_BAD_FRAME  0x8000
 
 /* Authentication message size */
-#define VTUN_MESG_SIZE	50
+#define VTUN_MESG_SIZE	256
 
 /* Support for multiple connections */
 #define VTUN_MULTI_DENY		0  /* no */ 

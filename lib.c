@@ -122,7 +122,9 @@ int print_p(int fd,const char *fmt, ...)
 
 	/* print the argument string */
 	va_start(ap, fmt);
-	vsnprintf(buf,sizeof(buf)-1, fmt, ap);
+	if (vsnprintf(buf,sizeof(buf)-1, fmt, ap) >= VTUN_MESG_SIZE)
+	   abort();
+
 	va_end(ap);
   
 	return write_n(fd, buf, sizeof(buf));

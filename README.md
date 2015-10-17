@@ -8,10 +8,11 @@ compiled until version 1.0.4 is out).
 * Unauthenticated encryption schemes were replaced with aesni and
 pclmulqdq-accelerated AES256-GCM.
 
+* The static, shared key was replaced by an ephemeral keys exchange with
+Curve25519. The PSK is now only used to sign ephemeral public keys and
+parameters.
+
 * Protection against replay attacks was added.
 
-* More secure key derivation and initial handshake.
-
-* Passwords are not kept in memory.
-
-* Guarded memory allocations for secrets.
+* Passwords are not kept in memory, guarded memory allocations are
+used for secrets.

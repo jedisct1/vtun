@@ -29,6 +29,7 @@
 #include <stdarg.h>
 
 #include <syslog.h>
+#include <sodium.h>
 
 #include "compat.h"
 #include "vtun.h"
@@ -107,6 +108,7 @@ statement: '\n'
 	  	  memcpy(parse_host, &default_host, sizeof(struct vtun_host));
 		  parse_host->host = strdup($1);
 		  parse_host->passwd = NULL;
+		  parse_host->akey = NULL;		  
 		  parse_host->key = NULL;
 		  parse_host->sopt.host = strdup($1);
 
@@ -574,7 +576,9 @@ int free_host(void *d, void *u)
       return 1;
 
    free(h->host);   
-   free(h->passwd);   
+   free(h->passwd);
+   sodium_free(h->akey);   
+   sodium_free(h->key);
    
    llist_free(&h->up, free_cmd, NULL);   
    llist_free(&h->down, free_cmd, NULL);

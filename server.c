@@ -181,6 +181,7 @@ void server(int sock)
 {
      struct sigaction sa;
 
+     memset(&sa, 0, sizeof sa);
      sa.sa_handler=SIG_IGN;
      sa.sa_flags=SA_NOCLDWAIT;;
      sigaction(SIGINT,&sa,NULL);

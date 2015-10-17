@@ -211,7 +211,7 @@ static char * subst_opt(char *str, struct vtun_sopt *opt)
 
           case '\\':
              nstr[np++] = str[sp++];
-             if( !nstr[sp] )
+             if( !str[sp] )
                 continue;
              /* fall through */
           default:

@@ -85,6 +85,7 @@ static void connection(int sock)
      io_init();
 
      if( (host=auth_server(sock)) ){
+        memset(&sa, 0, sizeof sa);
         sa.sa_handler=SIG_IGN;
 	sa.sa_flags=SA_NOCLDWAIT;;
         sigaction(SIGHUP,&sa,NULL);

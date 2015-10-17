@@ -5,8 +5,8 @@ following changes:
 the [git repository](https://github.com/jedisct1/libsodium) to be
 compiled until version 1.0.4 is out).
 
-* Unauthenticated encryption schemes were replaced with aesni and
-pclmulqdq-accelerated AES256-GCM.
+* Unauthenticated encryption schemes were replaced with hardware-accelerated
+AES256-GCM.
 
 * The static, shared key was replaced by an ephemeral keys exchange with
 Curve25519. The PSK is now only used to sign ephemeral public keys and

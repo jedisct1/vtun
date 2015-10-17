@@ -88,7 +88,7 @@ static int derive_key(struct vtun_host *host)
 
 static char *bf2cf(struct vtun_host *host)
 {
-    static char str[20], * ptr = str;
+    static char str[32], * ptr = str;
 
     *(ptr++) = '<';
 
@@ -145,7 +145,7 @@ static int cf2bf(char *str, struct vtun_host *host)
     char *ptr, *p;
     int s;
 
-    if (strlen(str) >= 20) {
+    if (strlen(str) >= 32) {
         return -1;
     }
     if ((ptr = strchr(str, '<'))) {

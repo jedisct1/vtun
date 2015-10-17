@@ -42,12 +42,12 @@ int tap_open(char *dev)
     int i, fd;
 
     if( *dev ) {
-       sprintf(tapname, "/dev/%s", dev);
+       snprintf(tapname, sizeof tapname, "/dev/%s", dev);
        return open(tapname, O_RDWR);
     }
 
     for(i=0; i < 255; i++) {
-       sprintf(tapname, "/dev/tap%d", i);
+       snprintf(tapname, sizeof tapname, "/dev/tap%d", i);
        /* Open device */
        if( (fd=open(tapname, O_RDWR)) > 0 ) {
           sprintf(dev, "tap%d",i);

@@ -98,7 +98,7 @@ void set_title(const char *fmt, ...)
 
 	/* print the argument string */
 	va_start(ap, fmt);
-	vsprintf(buf, fmt, ap);
+	vsnprintf(buf, sizeof buf, fmt, ap);
 	va_end(ap);
 
 	if( strlen(buf) > title_size - 1)
@@ -177,14 +177,14 @@ static char * subst_opt(char *str, struct vtun_sopt *opt)
                    optr=opt->laddr;
                    break;
                 case 'P':
-		   sprintf(buf,"%d",opt->lport);
+		   snprintf(buf, sizeof buf, "%d",opt->lport);
                    optr=buf;
                    break;
                 case 'a':
                    optr=opt->raddr;
                    break;
                 case 'p':
-		   sprintf(buf,"%d",opt->rport);
+		   snprintf(buf, sizeof buf, "%d",opt->rport);
                    optr=buf;
                    break;
 	        case 'h':

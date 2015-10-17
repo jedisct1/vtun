@@ -411,7 +411,7 @@ int linkfd(struct vtun_host *host)
         sa.sa_handler=sig_usr1;
         sigaction(SIGUSR1,&sa,NULL);
 
-	sprintf(file,"%s/%.20s", VTUN_STAT_DIR, host->host);
+	snprintf(file, sizeof file, "%s/%.20s", VTUN_STAT_DIR, host->host);
 	if( (host->stat.file=fopen(file, "a")) ){
 	   setvbuf(host->stat.file, NULL, _IOLBF, 0);
 	} else

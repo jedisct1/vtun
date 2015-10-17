@@ -47,13 +47,13 @@ int create_lock(char * file)
   ret = 0;
 
   /* Create temp file */
-  sprintf(tmp_file, "%s_%d_tmp\n", file, pid);
+  snprintf(tmp_file, sizeof tmp_file, "%s_%d_tmp\n", file, pid);
   if( (fd = open(tmp_file, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0 ){
      vtun_syslog(LOG_ERR, "Can't create temp lock file %s", file);
      return -1;
   }
 
-  pid = sprintf(str, "%d\n", pid);
+  pid = snprintf(str, sizeof str, "%d\n", pid);
   if( write(fd, str, pid) == pid ){
      /* Create lock file */
      if( link(tmp_file, file) < 0 ){
@@ -115,7 +115,7 @@ int lock_host(struct vtun_host * host)
   if( host->multi == VTUN_MULTI_ALLOW )
      return 0;
 
-  sprintf(lock_file, "%s/%s", VTUN_LOCK_DIR, host->host);
+  snprintf(lock_file, sizeof lock_file, "%s/%s", VTUN_LOCK_DIR, host->host);
 
   /* Check if lock already exists. */
   if( (pid = read_lock(lock_file)) > 0 ){ 
@@ -156,7 +156,7 @@ void unlock_host(struct vtun_host *host)
   if( host->multi == VTUN_MULTI_ALLOW )
      return;
 
-  sprintf(lock_file, "%s/%s", VTUN_LOCK_DIR, host->host);
+  snprintf(lock_file, sizeof lock_file, "%s/%s", VTUN_LOCK_DIR, host->host);
 
   if( unlink(lock_file) < 0 )
      vtun_syslog(LOG_ERR, "Unable to remove lock %s", lock_file);

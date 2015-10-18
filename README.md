@@ -1,9 +1,7 @@
 This is a fork of [VTUN](http://vtun.sourceforge.net/), with the
 following changes:
 
-* OpenSSL was replaced by Libsodium (this currently requires code from
-the [git repository](https://github.com/jedisct1/libsodium) to be
-compiled until version 1.0.4 is out).
+* OpenSSL was replaced with libsodium. This requires libsodium >= 1.0.4.
 
 * Unauthenticated encryption schemes were replaced with hardware-accelerated
 AES256-GCM.

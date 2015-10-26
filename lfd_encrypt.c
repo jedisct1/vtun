@@ -91,19 +91,6 @@ free_encrypt(void)
 }
 
 static int
-is_lower_or_equal(const unsigned char *a, const unsigned char *b, size_t size)
-{
-    size_t i;
-
-    for (i = 0U; i < size; i++) {
-        if (a[i] > b[i]) {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-static int
 encrypt_buf(int message_len_, char *message_, char ** const ciphertext_p)
 {
     const unsigned char *message = (const unsigned char *) message_;
@@ -140,7 +127,7 @@ decrypt_buf(int ciphertext_len_, char *ciphertext_, char ** const message_p)
     }
     ciphertext_len -= crypto_aead_NPUBBYTES;
     nonce = ciphertext + ciphertext_len;
-    if (is_lower_or_equal(nonce, ctx.previous_decrypted_nonce, crypto_aead_NPUBBYTES) ||
+    if (sodium_compare(nonce, ctx.previous_decrypted_nonce, crypto_aead_NPUBBYTES) <= 0 ||
         crypto_aead_aes256gcm_decrypt_afternm(ctx.message, &message_len, NULL,
                                               ciphertext, ciphertext_len,
                                               NULL, 0ULL, nonce,

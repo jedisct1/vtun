@@ -56,16 +56,16 @@
 
 int tcp_write(int fd, char *buf, int len)
 {
-     register char *ptr;
+     struct iovec iov[2];
+     uint16_t header;
 
-     /* \/ WHOEVER WROTE THAT IS A DANGEROUS PSYCHOPATH \/ */
-     ptr = buf - sizeof(short);
+     header = htons((uint16_t) len);
+     len  = len & VTUN_FSIZE_MASK;
 
-     *((unsigned short *)ptr) = htons(len); 
-     /* /\ WHOEVER WROTE THAT IS A DANGEROUS PSYCHOPATH /\ */
-     len  = (len & VTUN_FSIZE_MASK) + sizeof(short);
+     iov[0] = (struct iovec) { .iov_base = &header, .iov_len = 2U };
+     iov[1] = (struct iovec) { .iov_base = buf, .iov_len = len };
 
-     return write_n(fd, ptr, len);
+     return write_v(fd, iov, 2);
 }
 
 int tcp_read(int fd, char *buf)

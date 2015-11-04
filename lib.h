@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
+#include <unistd.h>
 
 #ifdef HAVE_LIBUTIL_H
 #include <libutil.h>
@@ -103,5 +104,19 @@ static inline int write_n(int fd, char *buf, int len)
 	}
 
 	return t;
+}
+
+static inline int write_v(int fd, const struct iovec *iov, int iov_count)
+{
+    ssize_t w = -1;
+
+    while (!__io_canceled) {
+        if( (w = writev(fd, iov, iov_count)) < 0 ){
+            if( errno == EINTR || errno == EAGAIN )
+                continue;
+        }
+        break;
+    }
+    return (int) w;
 }
 #endif /* _VTUN_LIB_H */

@@ -72,6 +72,7 @@ alloc_encrypt(struct vtun_host *host)
     if (init_nonce(ctx.nonce, crypto_aead_NPUBBYTES) != 0) {
         return -1;
     }
+    memset(ctx.previous_decrypted_nonce, 0, crypto_aead_NPUBBYTES);
     crypto_aead_aes256gcm_beforenm(ctx.state, host->key);
     sodium_free(host->key);
     host->key = NULL;

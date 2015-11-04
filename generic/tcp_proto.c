@@ -58,9 +58,11 @@ int tcp_write(int fd, char *buf, int len)
 {
      register char *ptr;
 
+     /* \/ WHOEVER WROTE THAT IS A DANGEROUS PSYCHOPATH \/ */
      ptr = buf - sizeof(short);
 
      *((unsigned short *)ptr) = htons(len); 
+     /* /\ WHOEVER WROTE THAT IS A DANGEROUS PSYCHOPATH /\ */
      len  = (len & VTUN_FSIZE_MASK) + sizeof(short);
 
      return write_n(fd, ptr, len);

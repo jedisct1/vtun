@@ -48,10 +48,17 @@ init_nonce(unsigned char *nonce, size_t nonce_size)
         sleep(SLEEP_WHEN_CLOCK_IS_OFF);
         randombytes_buf(nonce, nonce_size);
     } else {
-        randombytes_buf(nonce + 4, nonce_size - 4);
-        now <<= 2;
-        memcpy(nonce, &now, 3);
-        nonce[3] = (nonce[3] & 0x3) ^ *(((unsigned char *) &now) + 3);
+        randombytes_buf(nonce, nonce_size - 3);
+        nonce[nonce_size - 1] = (unsigned char) (now >> 22);
+        nonce[nonce_size - 2] = (unsigned char) (now >> 14);
+        nonce[nonce_size - 3] = (unsigned char) (now >> 6);
+        nonce[nonce_size - 4] =
+            (unsigned char) (now << 2) ^ (nonce[nonce_size - 4] & 0x3);
+    }
+    if (vtun.svr != 0) {
+        nonce[nonce_size - 1] |= 0x80;
+    } else {
+        nonce[nonce_size - 1] &= ~0x80;
     }
     return 0;
 }

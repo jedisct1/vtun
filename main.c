@@ -66,7 +66,7 @@ int is_rmt_fd_connected=1;
 
 int main(int argc, char *argv[], char *env[])
 {
-     int svr, daemon, sock, fd, opt;
+     int daemon, sock, fd, opt;
 #if defined(HAVE_WORKING_FORK) || defined(HAVE_WORKING_VFORK)
      int dofork;
 #endif
@@ -75,7 +75,7 @@ int main(int argc, char *argv[], char *env[])
      char *hst;
 
      /* Configure default settings */
-     svr = 0; daemon = 1; sock = 0;
+     daemon = 1; sock = 0;
 #if defined(HAVE_WORKING_FORK) || defined(HAVE_WORKING_VFORK)
      dofork = 1;
 #endif
@@ -94,6 +94,7 @@ int main(int argc, char *argv[], char *env[])
      vtun.svr_name = NULL;
      vtun.svr_addr = NULL;
      vtun.bind_addr.port = -1;
+     vtun.svr = 0;
      vtun.svr_type = -1;
      vtun.syslog   = LOG_DAEMON;
 
@@ -122,7 +123,7 @@ int main(int argc, char *argv[], char *env[])
 #ifdef HAVE_WORKING_FORK
 	    case 's':
 #endif
-		svr = 1;
+		vtun.svr = 1;
 		break;
 	    case 'L':
 		vtun.svr_addr = strdup(optarg);
@@ -158,9 +159,9 @@ int main(int argc, char *argv[], char *env[])
  	openlog("vtund", LOG_PID|LOG_NDELAY|LOG_PERROR, vtun.syslog);
      }
 
-	clear_nat_hack_flags(svr);
+	clear_nat_hack_flags(vtun.svr);
 
-     if(!svr){
+     if(!vtun.svr){
 	if( argc - optind < 2 ){
 	   usage();
            exit(1);
@@ -225,7 +226,7 @@ int main(int argc, char *argv[], char *env[])
 	chdir("/");
      }
 
-     if(svr){
+     if(vtun.svr){
         memset(&sa,0,sizeof(sa));
         sa.sa_handler=reread_config;
         sigaction(SIGHUP,&sa,NULL);

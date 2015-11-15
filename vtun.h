@@ -204,6 +204,7 @@ struct vtun_opts {
    char *svr_name;       /* Server's host name */
    char *svr_addr;       /* Server's address (string) */
    struct vtun_addr bind_addr;	 /* Server should listen on this address */
+   int  svr;		 /* 0=process is a client 1=process is a server */
    int  svr_type;	 /* Server mode */
    int  syslog; 	 /* Facility to log messages to syslog under */
    int  quiet;		 /* Be quiet about common errors */

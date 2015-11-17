@@ -332,7 +332,9 @@ struct vtun_host *auth_server(int fd)
                 sodium_bin2hex(flhash_hex, sizeof flhash_hex, flhash, sizeof flhash);
                 print_p(fd, "FLAGS: %s %s\n", flags, flhash_hex);
 
-                crypto_scalarmult(dhkey, server_sk, client_pk);
+                if (crypto_scalarmult(dhkey, server_sk, client_pk) != 0) {
+                    break;
+                }
                 sodium_memzero(server_sk, sizeof server_sk);
                 if ((host->key = sodium_malloc(HOST_KEYBYTES)) == NULL) {
                     abort();
@@ -457,7 +459,9 @@ int auth_client(int fd, struct vtun_host *host)
                 if (sodium_memcmp(hash, flhash, sizeof hash) != 0) {
                     break;
                 }
-                crypto_scalarmult(dhkey, client_sk, server_pk);
+                if (crypto_scalarmult(dhkey, client_sk, server_pk) != 0) {
+                    break;
+                }
                 sodium_memzero(client_sk, sizeof client_sk);
                 if ((host->key = sodium_malloc(HOST_KEYBYTES)) == NULL) {
                     abort();
